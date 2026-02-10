@@ -633,3 +633,19 @@
     margin: 0;
   }
 }
+.object-fit-cover {
+  object-fit: cover;
+}
+
+.auth-form {
+  max-width: 420px;
+}
+
+.btn-info {
+  background-color: #4fc3c7;
+  border: none;
+}
+
+.btn-info:hover {
+  background-color: #3bb1b5;
+}
