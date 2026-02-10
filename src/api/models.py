@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, ForeignKey, Date, Enum as SQLEnum
+from sqlalchemy import String, Boolean, ForeignKey, Date, Enum as SQLEnum, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 
@@ -14,6 +14,8 @@ class User(db.Model):
     name: Mapped[str] = mapped_column(String(50), nullable=False)
     role = mapped_column(SQLEnum('ADMIN', 'TEACHER', 'STUDENT', name='role_enum'), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    reset_token: Mapped[str] = mapped_column(String(255), nullable=True)
+    reset_expires: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     students_groups: Mapped[list["Students_Group"]] = relationship(back_populates='user')
     groups_admin: Mapped[list["Group"]] = relationship(back_populates='admin', foreign_keys="Group.admin_id")
     groups_teacher: Mapped[list["Group"]] = relationship(back_populates='teacher', foreign_keys="Group.teacher_id")

@@ -25,6 +25,8 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { TodoViewStudent } from "./pages/TodoViewStudent.jsx";
 import { CreateGroupsAdmin } from "./pages/CreateGroupsAdmin";
 import { TodoDetailTeacher } from "./pages/TodoDetailTeacher.jsx";
+import { ForgotPassword } from "./pages/ForgotPassword.jsx";
+import { ResetPassword } from "./pages/ResetPassword.jsx";
 
 
 
@@ -60,6 +62,8 @@ export const router = createBrowserRouter(
       <Route path="/homeTeacher" element={<ProtectedRoute allowedRoles={["TEACHER"]}> <HomeTeacher /> </ProtectedRoute>} />
       <Route path="/homeAdmin" element={<ProtectedRoute allowedRoles={["ADMIN"]}> <HomeAdmin /> </ProtectedRoute>} />
       <Route path="/teacher/todos/:id" element={<TodoDetailTeacher />} />
+      <Route path="/forgotpassword" element={<ForgotPassword />} />
+      <Route path="/resetpassword" element={<ResetPassword />} />
 
 
     </Route>

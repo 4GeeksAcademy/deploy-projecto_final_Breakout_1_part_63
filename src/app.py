@@ -19,8 +19,10 @@ from api.models import db
 from api.models import Students_Group, Group, Todo, Submission, Status, User, Reading
 from api.utils import APIException, generate_sitemap
 from flask_migrate import Migrate
-from flask import Flask, request, jsonify, url_for, send_from_directory, session, redirect
+from flask import Flask, request, jsonify, url_for, send_from_directory, session, redirect,Blueprint
 import os
+import secrets
+from werkzeug.security import generate_password_hash, check_password_hash
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 load_dotenv()
@@ -100,6 +102,7 @@ jwt = JWTManager(app)
 app.url_map.strict_slashes = False
 
 CORS(app)
+auth_bp = Blueprint('auth', __name__)
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -169,6 +172,77 @@ def get_current_user():
         return jsonify({"msg": "Usuario no encontrado"}), 404
 
     return jsonify(user.serialize()), 200
+
+def send_reset_email(email, reset_link):
+    resend.emails.send({
+        "from": "Academica <onboarding@resend.dev>",
+        "to": email,
+        "subject": "Recuperar contraseña",
+        "html": f"""
+        <h3>Recuperación de contraseña</h3>
+        <p>Haz click en el siguiente enlace para cambiar tu contraseña:</p>
+        <a href="{reset_link}">Recuperar contraseña</a>
+        <p>Este link vence en 15 minutos.</p>
+        """
+    })
+
+@app.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    body = request.get_json()
+    email = body.get("email")
+
+    if not email:
+        return jsonify({"msg": "Email requerido"}), 400
+
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        reset_token = secrets.token_urlsafe(32)
+        user.reset_token = reset_token
+        user.reset_expires = datetime.utcnow() + timedelta(minutes=15)
+        db.session.commit()
+
+        reset_link = (
+            "https://effective-space-doodle-jjwp476xwj76hj669-3000.app.github.dev"
+            f"/reset-password?token={reset_token}"
+        )
+
+        try:
+            send_reset_email(user.email, reset_link)
+        except Exception as e:
+            print("Error enviando email:", e)
+
+    return jsonify({
+        "msg": "Si el email existe, se enviará un link de recuperación"
+    }), 200
+
+@app.route('/reset-password', methods=['POST'])
+def reset_password():
+    body = request.get_json()
+    token = body.get("token")
+    new_password = body.get("password")
+
+    if not token or not new_password:
+        return jsonify({"msg": "Token y contraseña requeridos"}), 400
+
+    user = User.query.filter_by(reset_token=token).first()
+
+    if not user:
+        return jsonify({"msg": "Token inválido"}), 400
+
+    if user.reset_expires < datetime.utcnow():
+        return jsonify({"msg": "Token expirado"}), 400
+
+    user.password = generate_password_hash(new_password)
+    user.reset_token = None
+    user.reset_expires = None
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Contraseña actualizada correctamente"
+    }), 200
+
+
 # MOSTRAR LECTURAS
 
 
@@ -178,6 +252,7 @@ def get_all_readings():
     readings_serialized = []
     for reading in readings:
         readings_serialized.append(reading.serialize())
+    print("RESEND KEY:", os.getenv("RESEND_API_KEY"))
     return jsonify(readings_serialized)
 
 # MOSTRAR LECTURA POR ID
@@ -317,15 +392,17 @@ def register():
 
         required_fields = ["email", "password", "name"]
         for field in required_fields:
-            if field not in body:
+            if field not in body or not body[field]:
                 return jsonify({"msg": f"El campo {field} es obligatorio"}), 400
 
         if User.query.filter_by(email=body["email"]).first():
             return jsonify({"msg": "Este email ya está en uso"}), 409
 
+        hashed_password = generate_password_hash(body["password"])
+
         new_user = User(
             email=body["email"],
-            password=body["password"],
+            password=hashed_password,
             name=body["name"],
             role="STUDENT",
             is_active=True
@@ -363,14 +440,12 @@ def login():
 
         user = User.query.filter_by(email=body['email']).first()
 
-        if not user or user.password != body['password']:
+        if not user or not check_password_hash(user.password, body['password']):
             return jsonify({'msg': 'Credenciales incorrectas'}), 401
 
         access_token = create_access_token(
             identity=str(user.id),
-            additional_claims={
-                "role": user.role
-            }
+            additional_claims={"role": user.role}
         )
 
         return jsonify({

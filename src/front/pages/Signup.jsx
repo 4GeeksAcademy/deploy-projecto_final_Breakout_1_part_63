@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import { Link } from "react-router-dom";
 
 export const Signup = () => {
   const { dispatch } = useGlobalReducer();
@@ -38,11 +39,11 @@ export const Signup = () => {
       }
 
       dispatch({
-        type: "REGISTER_STUDENT_SUCCESS",
+        type: "REGISTER_STUDENTS_SUCCESS",
         payload: data
       });
 
-      navigate("/login");
+      navigate("/homeStudent");
 
     } catch (error) {
       setErr(error.message);
@@ -70,15 +71,17 @@ export const Signup = () => {
       <div className="col-md-6 d-flex align-items-center justify-content-center">
         <div className="w-75" style={{ maxWidth: "420px" }}>
 
-          <h3 className="text-center mb-4">REGÍSTRATE</h3>
+          <h3 className="text-center mb-4">REGÍSTRATE EN ACADEMICA</h3>
 
           <div className="d-flex justify-content-center mb-4">
             <div className="btn-group rounded-pill bg-light p-1">
+              <Link to="/login">
               <button className="btn btn-light rounded-pill px-4">
-                Login
+                ingresar
               </button>
+              </Link>
               <button className="btn btn-info rounded-pill px-4">
-                Register
+                Registrarte
               </button>
             </div>
           </div>
@@ -128,7 +131,7 @@ export const Signup = () => {
 
             <div className="text-center">
               <button className="btn btn-info rounded-pill px-5">
-                Register
+                Registrate
               </button>
             </div>
           </form>

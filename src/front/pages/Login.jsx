@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { Link } from "react-router-dom";
 
 export const Login = () => {
     const [email, setEmail] = useState("");
@@ -66,7 +67,6 @@ export const Login = () => {
   <div className="container-fluid vh-100">
     <div className="row h-100">
 
-      {/* Imagen */}
       <div className="col-md-6 d-none d-md-flex p-4">
         <div className="w-100 position-relative rounded-4 overflow-hidden">
           <img
@@ -81,20 +81,22 @@ export const Login = () => {
         </div>
       </div>
 
-      {/* Formulario */}
+
       <div className="col-md-6 d-flex align-items-center justify-content-center">
         <div className="w-75" style={{ maxWidth: "420px" }}>
 
-          <h3 className="text-center mb-4">INICIAR SESIÓN</h3>
+          <h3 className="text-center mb-4">INICIAR SESIÓN EN ACADEMICA</h3>
 
           <div className="d-flex justify-content-center mb-4">
             <div className="btn-group rounded-pill bg-light p-1">
               <button className="btn btn-info rounded-pill px-4">
-                Login
+                Ingresar
               </button>
+              <Link to="/Signup">
               <button className="btn btn-light rounded-pill px-4">
-                Register
+                Registarte
               </button>
+              </Link>
             </div>
           </div>
 
@@ -132,7 +134,12 @@ export const Login = () => {
             <div> 
               <input type="checkbox" className="form-check-input me-2" /> 
               <label className="form-check-label">Recuerdame</label> 
-              </div> <a href="#" className="text-decoration-none"> ¿olvidaste tu contraseña? </a> 
+              </div>
+              <Link to="/forgotpassword">
+              <button className="btn btn-sucess">
+                ¿Olvidaste tu contraseña?
+              </button>
+              </Link>
               </div>
             <div className="text-center">
               <button className="btn btn-info rounded-pill px-5">
