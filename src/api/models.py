@@ -126,7 +126,7 @@ class Status(db.Model):
     submission: Mapped["Submission"] = relationship(back_populates='statuses')
     state = mapped_column(SQLEnum('PENDING', 'APPROVED', 'REJECTED', name='status_enum'), nullable=False, default='PENDING')
     feedback: Mapped[str] = mapped_column(String(255))
-    teacher_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=False)
+    teacher_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=True)
     teacher: Mapped["User"] = relationship(back_populates='statuses')
     def serialize(self):
         return {

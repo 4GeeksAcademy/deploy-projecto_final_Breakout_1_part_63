@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { CardsReadings } from "../components/CardsReadings";
+import { Link, useNavigate } from "react-router-dom";
 
 export const TeacherViewReadings = () => {
-
+     const navigate = useNavigate();
     const [readings, setReadings] = useState([]);
     const [err, setErr] = useState(null);
     const [statusMap, setStatusMap] = useState({});
@@ -83,7 +84,13 @@ export const TeacherViewReadings = () => {
                 statusMap={statusMap}
                 toggleStatus={toggleStatus}
             />
-
+      <button
+        type="button"
+        className="btn btn-sm btn-outline-secondary mb-3"
+        onClick={() => navigate(-1)}
+      >
+        ← Volver
+      </button>
             <div className="d-flex justify-content-center mt-3 mb-3">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                     <button

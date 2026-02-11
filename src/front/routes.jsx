@@ -27,6 +27,10 @@ import { CreateGroupsAdmin } from "./pages/CreateGroupsAdmin";
 import { TeacherViewReadings } from "./pages/TeacherViewReadings";
 import { TodoDetailTeacher } from "./pages/TodoDetailTeacher.jsx";
 
+import { TodoViewTeacher } from "./pages/TodoViewTeacher.jsx";
+import { TeacherSubmissionsList } from "./pages/TeacherSubmissionsList.jsx";
+import { TeacherSubmissionReview } from "./pages/TeacherSubmissionReview.jsx";
+
 
 
 export const router = createBrowserRouter(
@@ -62,6 +66,9 @@ export const router = createBrowserRouter(
       <Route path="/homeAdmin" element={<ProtectedRoute allowedRoles={["ADMIN"]}> <HomeAdmin /> </ProtectedRoute>} />
       <Route path="/teacher/todos/:id" element={<TodoDetailTeacher />} />
 
+      <Route path="/homeTeacher/todos" element={<TodoViewTeacher />} />
+      <Route path="/homeTeacher/todos/:todoId/submissions" element={<TeacherSubmissionsList />}/>
+      <Route path="/homeTeacher/todos/:todoId/submissions/:submissionId" element={<TeacherSubmissionReview />}/>
 
     </Route>
   )

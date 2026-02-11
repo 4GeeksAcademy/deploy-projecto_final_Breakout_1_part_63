@@ -1044,38 +1044,56 @@ def get_status_by_id(status_id):
 
 
 @app.route('/statuses/<int:status_id>', methods=['PUT'])
+@jwt_required()
+@role_required("TEACHER", "ADMIN")
 def update_status(status_id):
     status = Status.query.get(status_id)
     if not status:
         return jsonify({"msg": "No hay calificación disponible"}), 404
-    body = request.get_json(silent=True)
-    if body is None:
-        return jsonify({"msg": "Complete los campos requeridos"}), 400
-    if 'state' in body:
-        status.state = body['state']
-    if 'feedback' in body:
-        status.feedback = body['feedback']
+
+    body = request.get_json(silent=True) or {}
+
+    if "state" in body:
+        status.state = str(body["state"]).upper()
+    if "feedback" in body:
+        status.feedback = body["feedback"]
+
+   
+    status.teacher_id = int(get_jwt_identity())
+
     db.session.commit()
-    return jsonify({"msg": "Calificación actualizada exitosamente"}), 200
+    return jsonify({"msg": "Calificación actualizada", "status": status.serialize()}), 200
 
 
-@app.route('/statuses/<int:status_id>', methods=['POST'])
-def create_status(status_id):
-    body = request.get_json(silent=True)
-    if body is None:
-        return jsonify({"msg": "Complete los campos requeridos"}), 400
-    if 'submission_id' not in body:
-        return jsonify({"msg": "El campo submission_id no puede estar vacío"}), 400
-    if 'state' not in body:
-        return jsonify({"msg": "El campo state no puede estar vacío"}), 400
+
+@app.route('/statuses', methods=['POST'])
+@jwt_required()
+@role_required("TEACHER", "ADMIN")
+def create_status():
+    body = request.get_json(silent=True) or {}
+
+    if "submission_id" not in body:
+        return jsonify({"msg": "submission_id requerido"}), 400
+    if "state" not in body:
+        return jsonify({"msg": "state requerido"}), 400
+
+ 
+    existing = Status.query.filter_by(submission_id=body["submission_id"]).first()
+    if existing:
+        return jsonify({"msg": "Ya existe una calificación para esta entrega", "status_id": existing.id}), 409
+
     new_status = Status(
-        submission_id=body['submission_id'],
-        state=body['state'],
-        feedback=body.get('feedback', '')
+        submission_id=int(body["submission_id"]),
+        state=str(body["state"]).upper(),
+        feedback=body.get("feedback", ""),
+        teacher_id=int(get_jwt_identity())  
     )
+
     db.session.add(new_status)
     db.session.commit()
-    return jsonify({"msg": "Calificación creada exitosamente"}), 201
+
+    return jsonify({"msg": "Calificación creada", "status": new_status.serialize()}), 201
+
 
 #         API CALENDARIO DE GOOGLE
 
