@@ -84,7 +84,7 @@ export const Navbar = () => {
 
           {isAuthenticated && role === "STUDENT" && (
             <>
-              <Link to="/mis-tareas">
+              <Link to="/todoviewstudent">
                 <button className="btn btn-success ms-2">
                   Mis Tareas
                 </button>

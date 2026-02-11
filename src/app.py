@@ -498,14 +498,12 @@ def register():
 
         access_token = create_access_token(
             identity=new_user.id,
-            additional_claims={
-                "role": new_user.role
-            }
+            additional_claims={"role": new_user.role}
         )
 
         return jsonify({
             "msg": "Estudiante registrado correctamente",
-            "token": access_token,
+            "access_token": access_token,
             "role": new_user.role,
             "user": {
                 "id": new_user.id,
@@ -519,11 +517,11 @@ def register():
         return jsonify({"msg": "Error de integridad en la base de datos"}), 409
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         db.session.rollback()
-        return jsonify({
-            "msg": "Error interno del servidor",
-            "error": str(e)
-        }), 500
+        return jsonify({"error": str(e)}), 500
+
 
 #             ENDPOINT LOGIN
 
