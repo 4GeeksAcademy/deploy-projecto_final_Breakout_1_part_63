@@ -23,6 +23,8 @@ from flask import Flask, request, jsonify, url_for, send_from_directory, session
 import os
 import secrets
 from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
+load_dotenv()
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
 load_dotenv()
@@ -111,7 +113,17 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = False
 jwt = JWTManager(app)
 app.url_map.strict_slashes = False
 
-CORS(app)
+frontend_url = os.getenv("FRONTEND_URL")
+
+if ENV == "development":
+    CORS(app)
+else:
+    CORS(app, resources={
+        r"/*": {
+            "origins": frontend_url
+        }
+    })
+
 auth_bp = Blueprint('auth', __name__)
 
 # database condiguration
@@ -137,6 +149,7 @@ print(">>> Registrando blueprint API")
 app.register_blueprint(api, url_prefix='/api')
 
 # Handle/serialize errors like a JSON object
+
 
 
 @app.errorhandler(APIException)
@@ -183,16 +196,20 @@ def get_current_user():
 
     return jsonify(user.serialize()), 200
 
-def send_reset_email(email, reset_link):
-    resend.emails.send({
+def send_reset_email(to_email, reset_link, name=""):
+    resend.Emails.send({
         "from": "Academica <onboarding@resend.dev>",
-        "to": email,
+        "to": to_email,
         "subject": "Recuperar contraseña",
         "html": f"""
-        <h3>Recuperación de contraseña</h3>
-        <p>Haz click en el siguiente enlace para cambiar tu contraseña:</p>
-        <a href="{reset_link}">Recuperar contraseña</a>
-        <p>Este link vence en 15 minutos.</p>
+            <p>Hola {name},</p>
+            <p>Solicitaste recuperar tu contraseña.</p>
+            <p>
+              <a href="{reset_link}">
+                Click acá para resetearla
+              </a>
+            </p>
+            <p>Este link expira en 15 minutos.</p>
         """
     })
 
@@ -212,13 +229,15 @@ def forgot_password():
         user.reset_expires = datetime.utcnow() + timedelta(minutes=15)
         db.session.commit()
 
-        reset_link = (
-            "https://effective-space-doodle-jjwp476xwj76hj669-3000.app.github.dev"
-            f"/reset-password?token={reset_token}"
-        )
+        frontend_url = os.getenv(
+            "FRONTEND_URL",
+            "http://localhost:3000"
+        ).rstrip("/")
+
+        reset_link = f"{frontend_url}/reset-password?token={reset_token}"
 
         try:
-            send_reset_email(user.email, reset_link)
+            send_reset_email(user.email, reset_link, user.name)
         except Exception as e:
             print("Error enviando email:", e)
 

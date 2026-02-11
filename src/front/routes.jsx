@@ -68,7 +68,7 @@ export const router = createBrowserRouter(
       <Route path="/homeAdmin" element={<ProtectedRoute allowedRoles={["ADMIN"]}> <HomeAdmin /> </ProtectedRoute>} />
       <Route path="/teacher/todos/:id" element={<TodoDetailTeacher />} />
       <Route path="/forgotpassword" element={<ForgotPassword />} />
-      <Route path="/resetpassword" element={<ResetPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       <Route path="/homeTeacher/todos" element={<TodoViewTeacher />} />
       <Route path="/homeTeacher/todos/:todoId/submissions" element={<TeacherSubmissionsList />}/>
