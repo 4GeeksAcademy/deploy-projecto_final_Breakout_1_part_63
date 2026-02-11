@@ -10,7 +10,9 @@ export const HomeStudent = () => {
 	 const [readings, setReadings] = useState([]);
 	 const [err, setErr] = useState(null);
 
-	 const currentReadings = readings.slice(0, 4);
+	 const currentReadings = [...readings]
+  .sort((a, b) => b.id - a.id) // más reciente primero
+  .slice(0, 4);
 
 
 	useEffect(() => {
@@ -148,7 +150,7 @@ useEffect(() => {
 			
 
 		<div className="container mt-5">
-	<h2 className="fw-bold mb-4">Mis Lecturas</h2>
+	<h2 className="fw-bold mb-4">Mis Lecturas <span className="fs-4 fw-lighter">(Vista Previa)</span></h2> 
 
 	{currentReadings.length === 0 && (
 		<p>No hay lecturas asignadas</p>

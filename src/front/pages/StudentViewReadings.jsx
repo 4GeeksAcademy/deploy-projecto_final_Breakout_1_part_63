@@ -103,13 +103,11 @@ export const StudentViewReadings = () => {
     return (
         <div className="container mt-5">
            
-        <button
-        type="button"
-        className="btn btn-sm btn-outline-secondary mb-3"
-        onClick={() => navigate(-1)}
-      >
-        ← Volver a Página Principal
-      </button>
+        <Link to="/homeStudent">
+								<button className="btn btn-light">
+									←   Volver a Página Principal
+								</button>
+							</Link>
           
 
             <h2 className="display-5 fw-bold mb-4 ">

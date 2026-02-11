@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import UploadFiles from "../components/UploadFiles.jsx";
+import { Link } from "react-router-dom";
 
 
 export const EditReadingTeacher = () => {
@@ -197,13 +198,12 @@ export const EditReadingTeacher = () => {
 
     return (
         <div className="container mt-5">
-<button
-        type="button"
-        className="btn btn-sm btn-outline-secondary mb-3"
-        onClick={() => navigate(-1)}
-      >
-        ← Volver a todas las lecturas
-      </button>
+<Link to="/teacher/readings">
+                                <button className="btn btn-light">
+                                    ←   Volver a todas las lecturas 
+                                </button>
+                            </Link>
+
             <h2 className="mb-4">
     Editar lectura: <span>{title}</span>
 </h2>
