@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { Link } from "react-router-dom";
 
 export const Login = () => {
     const [email, setEmail] = useState("");
@@ -63,38 +64,93 @@ export const Login = () => {
     };
 
     return (
-        <div className="container col-5 mt-5 mx-auto">
-            <h1>Login</h1>
+  <div className="container-fluid vh-100">
+    <div className="row h-100">
 
-            {err && <div className="alert alert-danger mt-3">{err}</div>}
-
-            <form onSubmit={handleSubmit} className="mt-3">
-                <div className="mb-3">
-                    <label className="form-label">Dirección de Email</label>
-                    <input
-                        type="email"
-                        className="form-control"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </div>
-
-                <div className="mb-3">
-                    <label className="form-label">Password</label>
-                    <input
-                        type="password"
-                        className="form-control"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
-
-                <button type="submit" className="btn btn-info">
-                    Login
-                </button>
-            </form>
+      <div className="col-md-6 d-none d-md-flex p-4">
+        <div className="w-100 position-relative rounded-4 overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d"
+            alt="login"
+            className="w-100 h-100 object-fit-cover"
+          />
+          <div className="position-absolute bottom-0 start-0 p-4 text-white">
+            <h2 className="fw-bold">BIENVENID@ A ACADEMICA</h2>
+            <p>Ingresa con tu cuenta</p>
+          </div>
         </div>
-    );
-};
+      </div>
+
+
+      <div className="col-md-6 d-flex align-items-center justify-content-center">
+        <div className="w-75" style={{ maxWidth: "420px" }}>
+
+          <h3 className="text-center mb-4">INICIAR SESIÓN EN ACADEMICA</h3>
+
+          <div className="d-flex justify-content-center mb-4">
+            <div className="btn-group rounded-pill bg-light p-1">
+              <button className="btn btn-info rounded-pill px-4">
+                Ingresar
+              </button>
+              <Link to="/Signup">
+              <button className="btn btn-light rounded-pill px-4">
+                Registarte
+              </button>
+              </Link>
+            </div>
+          </div>
+
+          <p className="text-muted text-center mb-4">
+            Accede con tu correo institucional.
+          </p>
+
+          {err && <div className="alert alert-danger">{err}</div>}
+
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                className="form-control rounded-pill"
+                placeholder="Ingresa tu email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="form-label">Contraseña</label>
+              <input
+                type="password"
+                className="form-control rounded-pill"
+                placeholder="Ingresa tu contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+           <div className="d-flex justify-content-between mb-4"> 
+            <div> 
+              <input type="checkbox" className="form-check-input me-2" /> 
+              <label className="form-check-label">Recuerdame</label> 
+              </div>
+              <Link to="/forgotpassword">
+              <button className="btn btn-sucess">
+                ¿Olvidaste tu contraseña?
+              </button>
+              </Link>
+              </div>
+            <div className="text-center">
+              <button className="btn btn-info rounded-pill px-5">
+                Login
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+);};

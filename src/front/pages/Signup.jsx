@@ -1,119 +1,144 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
-
-
+import { Link } from "react-router-dom";
 
 export const Signup = () => {
-     const { store, dispatch } = useGlobalReducer();
+  const { dispatch } = useGlobalReducer();
 
-     const [first_name, setFirst_name] = useState("");
-     const [email, setEmail] = useState("");
-     const [password, setPassword] = useState("");
-     const [err, setErr] = useState(null);
-     const navigate = useNavigate();
+  const [first_name, setFirst_name] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [err, setErr] = useState(null);
 
-     const handleSubmit = async (e) => {
-          e.preventDefault();
-          setErr(null);
+  const navigate = useNavigate();
 
-          try {
-               const backend = import.meta.env.VITE_BACKEND_URL;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErr(null);
 
-            const body = {
-                name: first_name,
-                email: email,
-                password: password
+    try {
+      const backend = import.meta.env.VITE_BACKEND_URL;
 
-            };
+      const body = {
+        name: first_name,
+        email,
+        password
+      };
 
-            const resp = await fetch(`${backend}/register`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(body)
-            });
+      const resp = await fetch(`${backend}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
 
-            const data = await resp.json().catch(() => ({}));
+      const data = await resp.json();
 
-            if (!resp.ok) {
-                throw new Error(data.msg || "Error al registrar alumno");
-            }
+      if (!resp.ok) {
+        throw new Error(data.msg || "Error al registrar");
+      }
 
-            dispatch({
-                type: "REGISTER_STUDENT_SUCCESS",
-                payload: data
-            });
+      dispatch({
+        type: "REGISTER_STUDENTS_SUCCESS",
+        payload: data
+      });
 
-            setSuccess("Alumno registrado correctamente");
+      navigate("/homeStudent");
 
-            setFirst_name("");
-            setEmail("");
-            setPassword("");   
+    } catch (error) {
+      setErr(error.message);
+    }
+  };
 
-        } catch (error) {
-            setErr(error.message);
-        }
-    };
+ return (
+  <div className="container-fluid vh-100">
+    <div className="row h-100">
 
-     return (
-
-          <div className="container col-5 mt-5 mx-auto">
-
-               <h1>Registro</h1>
-
-               {err && <div className="alert alert-danger mt-3">{err}</div>}
-
-               <form onSubmit={handleSubmit} className="mt-3">
-
-
-
-                    <div className="mb-3 p-8">
-                         <label htmlFor="first_name" className="form-label">Nombre</label>
-
-                         <input
-                              id="first_name"
-                              type="text"
-                              className="form-control"
-                              value={first_name}
-                              onChange={(e) => setFirst_name(e.target.value)}
-                         />
-                    </div>
-
-
-                    <div className="mb-3 p-8">
-                         <label htmlFor="email" className="form-label">Dirección de Email</label>
-
-                         <input
-                              id="email"
-                              type="email"
-                              className="form-control"
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                         />
-
-                    </div>
-
-                    <div className="mb-3">
-                         <label htmlFor="password" className="form-label">Contraseña</label>
-                         <input
-                              id="password"
-                              type="password"
-                              className="form-control"
-                              value={password}
-                              onChange={(e) => setPassword(e.target.value)}
-                         />
-                         <div id="emailHelp" className="form-text">No compartas tu contraseña.</div>
-                    </div>
-
-                    <button type="submit" className="btn btn-success">Registro</button>
-               </form>
-
-               
-
+      <div className="col-md-6 d-none d-md-flex p-4">
+        <div className="w-100 position-relative rounded-4 overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1529070538774-1843cb3265df"
+            alt="signup"
+            className="w-100 h-100 object-fit-cover"
+          />
+          <div className="position-absolute bottom-0 start-0 p-4 text-white">
+            <h2 className="fw-bold">BIENVENID@ A ACADEMICA</h2>
+            <p>Crea tu cuenta para comenzar</p>
           </div>
-     );
+        </div>
+      </div>
 
+      <div className="col-md-6 d-flex align-items-center justify-content-center">
+        <div className="w-75" style={{ maxWidth: "420px" }}>
 
-}
+          <h3 className="text-center mb-4">REGÍSTRATE EN ACADEMICA</h3>
+
+          <div className="d-flex justify-content-center mb-4">
+            <div className="btn-group rounded-pill bg-light p-1">
+              <Link to="/login">
+              <button className="btn btn-light rounded-pill px-4">
+                ingresar
+              </button>
+              </Link>
+              <button className="btn btn-info rounded-pill px-4">
+                Registrarte
+              </button>
+            </div>
+          </div>
+
+          <p className="text-muted text-center mb-4">
+            Completa los datos para crear tu cuenta en Academica.
+          </p>
+
+          {err && <div className="alert alert-danger">{err}</div>}
+
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                className="form-control rounded-pill"
+                placeholder="Ingresa tu email institucional"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Nombre Completo</label>
+              <input
+                type="text"
+                className="form-control rounded-pill"
+                placeholder="Ingresa tu nombre completo"
+                value={first_name}
+                onChange={(e) => setFirst_name(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="form-label">Contraseña</label>
+              <input
+                type="password"
+                className="form-control rounded-pill"
+                placeholder="Ingresa tu contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="text-center">
+              <button className="btn btn-info rounded-pill px-5">
+                Registrate
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+);};
