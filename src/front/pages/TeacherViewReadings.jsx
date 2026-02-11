@@ -108,7 +108,7 @@ export const TeacherViewReadings = () => {
         className="btn btn-sm btn-outline-secondary mb-3"
         onClick={() => navigate(-1)}
       >
-        ← Volver a página principal
+        ← Volver a Página Principal
       </button>
 
             <h2 className="display-5 fw-bold mb-4 ">

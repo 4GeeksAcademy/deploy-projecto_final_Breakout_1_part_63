@@ -108,7 +108,7 @@ export const StudentViewReadings = () => {
         className="btn btn-sm btn-outline-secondary mb-3"
         onClick={() => navigate(-1)}
       >
-        ← Volver a página principal
+        ← Volver a Página Principal
       </button>
           
 

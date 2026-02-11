@@ -4,49 +4,73 @@ import portada from "../assets/img/portada.png";
 
 export const IndividualReadingViewTeacher = () => {
 
-
-    const params = useParams();
+    const { id } = useParams();
 
     const [reading, setReading] = useState(null);
     const [err, setErr] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    const token = localStorage.getItem("token");
+    const backend = import.meta.env.VITE_BACKEND_URL;
 
     useEffect(() => {
-        getReading();
-    }, []);
 
-    const getReading = async () => {
+        const getReading = async () => {
 
-        setErr(null);
-
-        try {
-
-            const backend = import.meta.env.VITE_BACKEND_URL;
-
-            const resp = await fetch(`${backend}/reading/${params.id}`);
-
-            const data = await resp.json().catch(() => ({}));
-
-            if (!resp.ok) {
-                throw new Error("Error al cargar lectura");
+            if (!token) {
+                setErr("No autenticado");
+                setLoading(false);
+                return;
             }
 
-            setReading(data);
+            try {
 
-        } catch (error) {
-            setErr(error.message);
-        }
-    };
+                const resp = await fetch(`${backend}/reading/${id}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    }
+                });
 
-    if (!reading) {
+                if (resp.status === 401) {
+                    throw new Error("Sesión expirada");
+                }
+
+                if (resp.status === 403) {
+                    throw new Error("No autorizado");
+                }
+
+                const data = await resp.json();
+
+                if (!resp.ok) {
+                    throw new Error(data?.msg || "Error al cargar lectura");
+                }
+
+                setReading(data);
+
+            } catch (error) {
+                setErr(error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        getReading();
+
+    }, [backend, id, token]);
+
+    if (loading) {
         return <div className="container mt-5">Cargando lectura...</div>;
+    }
+
+    if (err) {
+        return <div className="container mt-5 alert alert-danger">{err}</div>;
     }
 
     return (
 
         <div className="container mt-1">
-
-            {err && <div className="alert alert-danger">{err}</div>}
-
 
             <div className="m-0 p-0">
                 <img
@@ -56,7 +80,6 @@ export const IndividualReadingViewTeacher = () => {
                     style={{ maxHeight: "250px", objectFit: "cover" }}
                 />
             </div>
-
 
             <div className="text-center col-8 mx-auto">
 
@@ -71,29 +94,33 @@ export const IndividualReadingViewTeacher = () => {
                     {reading.content}
                 </p>
 
-                
+                {reading.reading_url && (
+                    <div className="row">
+                        <div className="col-4 m-auto">
+                            <a
+                                href={reading.reading_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-primary mt-4 mb-3"
+                                download
+                            >
+                                Descargar archivo de lectura
+                            </a>
+                        </div>
+                    </div>
+                )}
 
-                <div className="row">
-                    <div className="col-4 m-auto">
-                <a
-                    href={reading.reading_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-primary mt-4 mb-3"
-                >
-                    Descargar archivo de lectura
-                </a>
+                <p>
+                    Haz click en el botón para descargar el archivo de la lectura.
+                </p>
+                <Link
+    to={`/reading/edit/${reading.id}`}
+    className="btn btn-warning me-2"
+>
+    Editar lectura
+</Link>
 
-                </div>
-                </div>
-
-                <p>Haz click en el botón de "Descargar Archivo" para descargar el archivo de la lectura:</p>
-
-                <Link to="/readings/student" className="btn btn-success mt-4 mb-3">
-                        Editar tarea
-                </Link>
-
-                <Link to="/readings/student" className="btn btn-success mt-4 mb-3">
+                <Link to="/teacher/readings" className="btn btn-success mt-4 mb-3">
                     Volver a todas las lecturas
                 </Link>
 
@@ -101,4 +128,4 @@ export const IndividualReadingViewTeacher = () => {
 
         </div>
     );
-}
+};
