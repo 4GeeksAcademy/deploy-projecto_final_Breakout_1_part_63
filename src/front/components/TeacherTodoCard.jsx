@@ -1,16 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { RandomImgTarea } from "../components/RandomImgTarea";
 
 export const TeacherTodoCard = ({ todo }) => {
   return (
-    <div className="card border shadow-sm" style={{ minWidth: "320px", minHeight: "450px" }}>
+    <div className="card border shadow-sm" style={{ minWidth: "280px", minHeight: "450px" }}>
       <div className="border-bottom">
-        <img
-          src="https://fastly.picsum.photos/id/5/5000/3334.jpg?hmac=R_jZuyT1jbcfBlpKFxAb0Q3lof9oJ0kREaxsYV3MgCc"
-          className="card-img-top"
-          alt="tarea"
-          style={{ height: "180px", objectFit: "cover" }}
-        />
+        <RandomImgTarea
+        seed={todo.id}
+        className="card-img-top"
+        alt="tarea"
+       style={{ height: "220px", objectFit: "cover" }} 
+      />
       </div>
 
       <div className="card-body d-flex flex-column">
