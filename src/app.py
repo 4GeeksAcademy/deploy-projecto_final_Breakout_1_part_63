@@ -85,7 +85,7 @@ def send_email(to_email, subject, content):
 
     try:
         resend.Emails.send({
-            "from": "onboarding@resend.dev",  # puedes usar este mientras
+            "from": "Academica <onboarding@resend.dev>",
             "to": to_email,
             "subject": subject,
             "html": content
@@ -225,11 +225,12 @@ def create_new_reading():
     db.session.commit()
 
     send_email(
-        "ponercorreo",
-        "¡Hola Estudiante de Academica!, tienes una nueva lectura asignada",
+        "soportedeacademica@outlook.com", #correo sandboxeado
+        "¡Hola Estudiante de Academica!, tienes una nueva lectura asignada", #subject o encabezado
 
-        f"""
-        <h2>Nueva lectura asiganada por el profesor: {new_reading.teacher.name}</h2>
+#contenido html 
+        f""" 
+        <h2>Nueva lectura asiganada por el profesor: {new_reading.teacher.name}</h2>    
 
         <p><strong>Título:</strong> {new_reading.title}</p>
 
