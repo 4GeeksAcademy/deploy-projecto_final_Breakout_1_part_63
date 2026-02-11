@@ -284,19 +284,86 @@ def get_all_readings():
     print("RESEND KEY:", os.getenv("RESEND_API_KEY"))
     return jsonify(readings_serialized)
 
-# MOSTRAR LECTURA POR ID
+# MOSTRAR LECTURA POR ID testeo
 
 
-@app.route('/reading/<int:reading_id>', methods=['GET'])
-def get_reading(reading_id):
+@app.route('/reading/individual/<int:reading_id>', methods=['GET'])
+def get_reading_individual (reading_id):
     reading = Reading.query.get(reading_id)
     reading_serialized = reading.serialize()
     return jsonify(reading_serialized), 200
 
-# CREAR LECTURAS POR PROFESOR
+#MOSTRAR LECTURA POR ID CON AUTETICACION DE PROFESOR 
+
+@app.route('/reading/<int:reading_id>', methods=['GET'])
+@jwt_required()
+def get_reading(reading_id):
+
+    reading = Reading.query.get(reading_id)
+
+    if not reading:
+        return jsonify({'msg': 'Lectura no encontrada'}), 404
+
+    current_user_id = int(get_jwt_identity())
+
+    if reading.teacher_id != current_user_id:
+        return jsonify({'msg': 'No autorizado'}), 403
+
+    return jsonify(reading.serialize()), 200
 
 
-@app.route('/readings/create', methods=['POST'])
+
+#CREAR LECTURA NUEVO
+
+@app.route('/readings/create', methods=["POST"])
+@role_required("TEACHER", "ADMIN")
+def create_reading_automatic():
+    try:
+        body = request.get_json(silent=True) or {}
+
+        required = ["title", "description",
+                     "group_id"]
+        missing = [f for f in required if f not in body or body[f] in [None, ""]]
+        if missing:
+            return jsonify({"msg": f"Faltan campos obligatorios: {', '.join(missing)}"}), 400
+
+        group = Group.query.get(int(body["group_id"]))
+        if not group:
+            return jsonify({"msg": f"No existe un grupo con group_id={body['group_id']}"}), 400
+
+
+        teacher_id = int(get_jwt_identity())
+
+        
+
+        new_reading = Reading(
+            title=body["title"],
+            content=body["description"],
+            reading_url=body.get("archive_url", ""),
+            teacher_id=teacher_id,
+            group_id=int(body["group_id"]),
+        )
+
+        db.session.add(new_reading)
+        db.session.commit()
+
+        return jsonify({
+            "msg": "Lectura automática creada exitosamente",
+            "reading_id": new_reading.id
+        }), 201
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "msg": "Error creando la lectura",
+            "error": str(e)
+        }), 500
+
+
+# CREAR LECTURAS POR PROFESOR ANTIGUO
+
+
+@app.route('/readings/create/antiguo', methods=['POST'])
 def create_new_reading():
     body = request.get_json(silent=True)
     if body is None:
@@ -340,9 +407,10 @@ def create_new_reading():
     return jsonify({'msg': f'lectura {new_reading.title} agregada'}), 200
 
 
-# MODIFICAR LECTURA
-@app.route('/editreading/<int:reading_id>', methods=['PUT'])
-def edit_reading(reading_id):
+# MODIFICAR LECTURA TESTEO
+
+@app.route('/editreading/testeo/<int:reading_id>', methods=['PUT'])
+def edit_reading_antiguo(reading_id):
     reading = Reading.query.get(reading_id)
     if reading is None:
         return jsonify({'msg': f'Lectura {reading_id} no encontrada'}), 404
@@ -355,6 +423,30 @@ def edit_reading(reading_id):
     db.session.commit()
 
     return jsonify({'msg': f'Lectura {reading.name} actualizada'}), 200
+
+#MODIFICAR LECTURAS MEJORADO
+
+
+@app.route('/editreading/<int:id>', methods=['PUT'])
+@jwt_required()
+def edit_reading(id):
+
+    reading = Reading.query.get(id)
+    if not reading:
+        return jsonify({"msg": "Reading not found"}), 404
+
+    data = request.get_json()
+
+    reading.title = data.get("title", reading.title)
+    reading.content = data.get("content", reading.content)
+    reading.group_id = data.get("group_id", reading.group_id)
+
+    reading.reading_url = data.get("reading_url")
+
+    db.session.commit()
+
+    return jsonify({"msg": "Reading updated"}), 200
+
 
 #                   ENDPOINT PARA TRAER PROFESORES
 
@@ -394,11 +486,11 @@ def admin_get_students():
         return jsonify({"msg": "Error obteniendo alumnos", "error": str(e)}), 500
 
 
-# ELIMINAR READING
+# ELIMINAR READING TEST
 
 
-@app.route('/deletereading/<int:reading_id>', methods=['DELETE'])
-def delete_reading(reading_id):
+@app.route('/deletereading/test/<int:reading_id>', methods=['DELETE'])
+def delete_reading_test(reading_id):
     reading = Reading.query.get(reading_id)
     if reading is None:
         return jsonify({'msg': f'Lectura {reading_id} no encontrada'}), 404
@@ -407,6 +499,29 @@ def delete_reading(reading_id):
     db.session.commit()
 
     return jsonify(f'Se ha eliminado correctamente la lectura {reading.title} '), 200
+
+#ELIMINAR READING CON AUTENTICACION
+
+@app.route('/deletereading/<int:reading_id>', methods=['DELETE'])
+@jwt_required()
+def delete_reading(reading_id):
+
+    reading = Reading.query.get(reading_id)
+
+    if not reading:
+        return jsonify({'msg': 'Lectura no encontrada'}), 404
+
+    current_user_id = int(get_jwt_identity())
+
+   
+    if reading.teacher_id != current_user_id:
+        return jsonify({'msg': 'No autorizado'}), 403
+
+    db.session.delete(reading)
+    db.session.commit()
+
+    return jsonify({'msg': f'Lectura "{reading.title}" eliminada correctamente'}), 200
+
 
 # ENDPOINT READINGS BUSCAR LECTURA POR USER ID EN GRUPO PARA ESTUDIANTE
 

@@ -1,11 +1,19 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState} from "react";
 import { TodoCard } from "../components/todoCard";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { ReadingCards } from "../components/ReadingCards";
+import { ReadingCardHomeStudent } from "../components/ReadingCardHomeStudent.jsx";
 
 export const HomeStudent = () => {
 	const { store, dispatch } = useGlobalReducer();
 	const todos = store.todos || [];
+	 const [readings, setReadings] = useState([]);
+	 const [err, setErr] = useState(null);
+
+	 const currentReadings = [...readings]
+  .sort((a, b) => b.id - a.id) // más reciente primero
+  .slice(0, 4);
+
 
 	useEffect(() => {
 		const fetchTodos = async () => {
@@ -33,31 +41,42 @@ export const HomeStudent = () => {
 		fetchTodos();
 	}, [dispatch]);
 
-	const fetchReadings = async () => {
-		try {
-			const backend = import.meta.env.VITE_BACKEND_URL;
-			const resp = await fetch(`${backend}/readings`, {
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${localStorage.getItem("token")}`,
-				},
-			});
+	
 
-			const data = await resp.json();
+useEffect(() => {
+        getStudentReadings();
+    }, []);
 
-			dispatch({
-				type: "GET_READINGS_SUCCESS",
-				payload: data,
-			});
+    const getStudentReadings = async () => {
+        setErr(null);
 
-		} catch (error) {
-			console.error("Error fetching readings:", error);
-		}
-	};
+        try {
+            const backend = import.meta.env.VITE_BACKEND_URL;
+            const token = localStorage.getItem("token");
 
-	useEffect(() => {
-		fetchReadings();
-	}, [dispatch]);
+            if (!token) {
+                throw new Error("Usuario no autenticado");
+            }
+
+            const resp = await fetch(`${backend}/student/readings`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            const data = await resp.json().catch(() => ([]));
+
+            if (!resp.ok) {
+                throw new Error("Error al cargar lecturas");
+            }
+
+            setReadings(data);
+
+        } catch (error) {
+            setErr(error.message);
+        }
+    };
+
 
 	//traer nombre
 
@@ -128,19 +147,26 @@ export const HomeStudent = () => {
 				</div>
 			</div>
 
-			<div className="container mt-5">
-				<h2 className="fw-bold mb-4">Mis Lecturas</h2>
+			
 
-				{store.readings.length === 0 && (
-					<p>No hay lecturas disponibles</p>
-				)}
+		<div className="container mt-5">
+	<h2 className="fw-bold mb-4">Mis Lecturas <span className="fs-4 fw-lighter">(Vista Previa)</span></h2> 
 
-				<div className="d-flex gap-3 overflow-auto px-3 pb-3">
-					{store.readings.map(reading => (
-						<ReadingCards key={reading.id} reading={reading} />
-					))}
-				</div>
+	{currentReadings.length === 0 && (
+		<p>No hay lecturas asignadas</p>
+	)}
+
+	<div className="row g-4">
+		{currentReadings.map(reading => (
+			<div key={reading.id} className="col-md-6 col-lg-3">
+				<ReadingCardHomeStudent reading={reading} />
 			</div>
+		))}
+	</div>
+</div>
+
+
+				
 		</div>
 	);
 };
