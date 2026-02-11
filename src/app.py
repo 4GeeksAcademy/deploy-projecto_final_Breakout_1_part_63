@@ -274,10 +274,57 @@ def get_reading(reading_id):
     reading_serialized = reading.serialize()
     return jsonify(reading_serialized), 200
 
-# CREAR LECTURAS POR PROFESOR
+#CREAR LECTURA NUEVO
+
+@app.route('/readings/create', methods=["POST"])
+@role_required("TEACHER", "ADMIN")
+def create_reading_automatic():
+    try:
+        body = request.get_json(silent=True) or {}
+
+        required = ["title", "description",
+                     "group_id"]
+        missing = [f for f in required if f not in body or body[f] in [None, ""]]
+        if missing:
+            return jsonify({"msg": f"Faltan campos obligatorios: {', '.join(missing)}"}), 400
+
+        group = Group.query.get(int(body["group_id"]))
+        if not group:
+            return jsonify({"msg": f"No existe un grupo con group_id={body['group_id']}"}), 400
 
 
-@app.route('/readings/create', methods=['POST'])
+        teacher_id = int(get_jwt_identity())
+
+        
+
+        new_reading = Reading(
+            title=body["title"],
+            content=body["description"],
+            reading_url=body.get("archive_url", ""),
+            teacher_id=teacher_id,
+            group_id=int(body["group_id"]),
+        )
+
+        db.session.add(new_reading)
+        db.session.commit()
+
+        return jsonify({
+            "msg": "Lectura automática creada exitosamente",
+            "reading_id": new_reading.id
+        }), 201
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "msg": "Error creando la lectura",
+            "error": str(e)
+        }), 500
+
+
+# CREAR LECTURAS POR PROFESOR ANTIGUO
+
+
+@app.route('/readings/create/antiguo', methods=['POST'])
 def create_new_reading():
     body = request.get_json(silent=True)
     if body is None:

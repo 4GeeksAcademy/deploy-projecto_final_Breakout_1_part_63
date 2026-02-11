@@ -2,10 +2,8 @@ import { Link } from "react-router-dom";
 import lecturaslogo from "../assets/img/lecturaslogo.png";
 import { RandomImgLecturas } from "./RandomImgLecturas"; 
 
-export const CardsReadings = ({
-    readings,
-    statusMap,
-    toggleStatus
+export const CardsReadingsTeacher = ({
+    readings
 }) => {
     return (
         <div className="row">
@@ -24,24 +22,18 @@ export const CardsReadings = ({
                             </h5>
 
                             <Link
+                                to={`/reading/teacher/${reading.id}`}
+                                className="btn btn-primary me-2"
+                            >
+                                Ver lectura
+                            </Link>
+                             <Link
                                 to={`/reading/${reading.id}`}
                                 className="btn btn-primary me-2"
                             >
-                                Revisar lectura
+                                Editar lectura
                             </Link>
 
-                            <button
-                                className={`btn ${
-                                    statusMap[reading.id]
-                                        ? "btn-success"
-                                        : "btn-outline-secondary"
-                                }`}
-                                onClick={() => toggleStatus(reading.id)}
-                            >
-                                {statusMap[reading.id]
-                                    ? "Completada"
-                                    : "Pendiente"}
-                            </button>
 
                         </div>
                     </div>

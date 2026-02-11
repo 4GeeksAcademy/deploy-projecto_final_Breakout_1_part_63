@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
 import { CardsReadings } from "../components/CardsReadings";
+import useGlobalReducer from "../hooks/useGlobalReducer";
+import { Link } from "react-router-dom";
 
 
 
 export const StudentViewReadings = () => {
+   
+    const { store, dispatch } = useGlobalReducer();
 
 
     const [readings, setReadings] = useState([]);
     const [err, setErr] = useState(null);
-    const [statusMap, setStatusMap] = useState({});
+    
 
     const [currentPage, setCurrentPage] = useState(1);
     const readingsPerPage = 6;
@@ -47,12 +51,34 @@ export const StudentViewReadings = () => {
         }
     };
 
-    const toggleStatus = (id) => {
-        setStatusMap(prev => ({
-            ...prev,
-            [id]: !prev[id]
-        }));
-    };
+
+
+    useEffect(() => {
+            const fetchMe = async () => {
+                try {
+                    const backend = import.meta.env.VITE_BACKEND_URL;
+                    const resp = await fetch(`${backend}/me`, {
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                    });
+    
+                    if (!resp.ok) throw new Error("Error obteniendo usuario");
+    
+                    const data = await resp.json();
+    
+                    dispatch({
+                        type: "SET_CURRENT_USER",
+                        payload: data,
+                    });
+                } catch (error) {
+                    console.error("Error fetching current user:", error);
+                }
+            };
+    
+            fetchMe();
+        }, [dispatch]);
 
     //logica paginacion
 
@@ -76,8 +102,21 @@ export const StudentViewReadings = () => {
 
     return (
         <div className="container mt-5">
+           
+        <button
+        type="button"
+        className="btn btn-sm btn-outline-secondary mb-3"
+        onClick={() => navigate(-1)}
+      >
+        ← Volver a página principal
+      </button>
+          
 
-            <h1 className="mb-4">Tus lecturas</h1>
+            <h2 className="display-5 fw-bold mb-4 ">
+                                Tus lecturas,  <span className="text-primary">{store.user?.name || "Estudiante"}</span>
+                            </h2>
+        
+                            
 
             {err && <div className="alert alert-danger">{err}</div>}
 
@@ -86,6 +125,8 @@ export const StudentViewReadings = () => {
                 statusMap={statusMap}
                 toggleStatus={toggleStatus}
             />
+
+            
 
         {/* paginación  */}
             <div className="d-flex justify-content-center mt-3 mb-3">
