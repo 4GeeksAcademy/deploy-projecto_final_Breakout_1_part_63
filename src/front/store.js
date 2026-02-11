@@ -7,26 +7,18 @@ export const initialStore = () => {
   return {
     message: null,
     todos: [],
-    user: null,
-    role: role ? role : null,
-    isAuthenticated: !!token,
     readings: [],
     students: [],
     groups: [],
     staff: [],
+    user: null,
+    role: role,
+    isAuthenticated: Boolean(token && role),
   };
 };
 
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
-    case "REGISTER_STAFF_SUCCESS":  
-      return {
-        ...store,
-        user: action.payload.user,
-        role: action.payload.role,
-        isAuthenticated: true,
-        message: "Staff registrado correctamente",
-      };
 
     case "LOGIN_SUCCESS":
       return {
@@ -43,31 +35,25 @@ export default function storeReducer(store, action = {}) {
         user: null,
         role: null,
         isAuthenticated: false,
+        message: null,
       };
 
-    case "set_hello":
+    
+    case "REGISTER_STUDENTS_SUCCESS":
       return {
         ...store,
-        message: action.payload,
+        students: [...store.students, action.payload],
+        message: "Alumno registrado correctamente",
+      };
+
+    case "REGISTER_STAFF_SUCCESS":
+      return {
+        ...store,
+        staff: [...store.staff, action.payload],
+        message: "Staff registrado correctamente",
       };
 
     case "SET_TODOS":
-      return {
-        ...store,
-        todos: action.payload,
-      };
-
-    case "add_task":
-      const { id, color } = action.payload;
-      return {
-        ...store,
-        todos: store.todos.map((todo) =>
-          todo.id === id ? { ...todo, background: color } : todo
-        ),
-      };
-
-
-
     case "GET_TODOS_SUCCESS":
       return {
         ...store,
@@ -87,30 +73,23 @@ export default function storeReducer(store, action = {}) {
         readings: action.payload,
       };
 
-    case "REGISTER_STUDENTS_SUCCESS":
+    case "GET_STAFF_SUCCESS":
       return {
         ...store,
-        students: [...store.students, action.payload],
-        message: "Alumno registrado correctamente",
+        staff: action.payload,
       };
 
-      case "GET_STAFF_SUCCESS":
-        return {
-          ...store,
-          staff: action.payload,
-        };
-      
-      case "SET_GROUPS":
-        return {
-          ...store,
-          groups: action.payload,
-        };
+    case "SET_GROUPS":
+      return {
+        ...store,
+        groups: action.payload,
+      };
 
-      case "SET_CURRENT_USER":
-            return {
-                ...store,
-                user: action.payload,
-            };
+    case "SET_CURRENT_USER":
+      return {
+        ...store,
+        user: action.payload,
+      };
 
     default:
       throw Error("Unknown action.");

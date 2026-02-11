@@ -477,7 +477,23 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        return jsonify({"msg": "Estudiante registrado correctamente"}), 201
+        access_token = create_access_token(
+            identity=new_user.id,
+            additional_claims={
+                "role": new_user.role
+            }
+        )
+
+        return jsonify({
+            "msg": "Estudiante registrado correctamente",
+            "token": access_token,
+            "role": new_user.role,
+            "user": {
+                "id": new_user.id,
+                "email": new_user.email,
+                "name": new_user.name
+            }
+        }), 201
 
     except IntegrityError:
         db.session.rollback()
