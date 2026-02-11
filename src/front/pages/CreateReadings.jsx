@@ -263,7 +263,7 @@ export const CreateReadings = () => {
           <main className="col-12 col-lg-9 main-right">
             <div className="main-header">
               <div className="main-header-inner main-header-inner--todo">
-                <h1 className="header-title">Generador de tareas</h1>
+                <h1 className="header-title">Generador de lecturas</h1>
                 <div className="header-subtitle">Curso: Desarrollo Web</div>
               </div>
             </div>

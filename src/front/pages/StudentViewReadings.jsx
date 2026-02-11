@@ -122,8 +122,8 @@ export const StudentViewReadings = () => {
 
             <CardsReadings
                 readings={currentReadings}
-                statusMap={statusMap}
-                toggleStatus={toggleStatus}
+                
+                
             />
 
             

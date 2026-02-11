@@ -22,7 +22,7 @@ export const IndividualReadingViewStudent = () => {
 
             const backend = import.meta.env.VITE_BACKEND_URL;
 
-            const resp = await fetch(`${backend}/reading/${params.id}`);
+            const resp = await fetch(`${backend}/reading/individual/${params.id}`);
 
             const data = await resp.json().catch(() => ({}));
 

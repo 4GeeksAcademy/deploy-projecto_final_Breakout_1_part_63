@@ -25,7 +25,7 @@ export const IndividualReadingViewTeacher = () => {
 
             try {
 
-                const resp = await fetch(`${backend}/reading/${id}`, {
+                const resp = await fetch(`${backend}/reading/individual/${id}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",

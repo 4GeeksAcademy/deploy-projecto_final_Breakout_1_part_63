@@ -268,8 +268,8 @@ def get_all_readings():
 # MOSTRAR LECTURA POR ID testeo
 
 
-@app.route('/reading/testeo/<int:reading_id>', methods=['GET'])
-def get_reading_antiguo (reading_id):
+@app.route('/reading/individual/<int:reading_id>', methods=['GET'])
+def get_reading_individual (reading_id):
     reading = Reading.query.get(reading_id)
     reading_serialized = reading.serialize()
     return jsonify(reading_serialized), 200

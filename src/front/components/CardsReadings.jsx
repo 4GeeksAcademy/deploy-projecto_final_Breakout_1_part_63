@@ -3,9 +3,8 @@ import lecturaslogo from "../assets/img/lecturaslogo.png";
 import { RandomImgLecturas } from "./RandomImgLecturas"; 
 
 export const CardsReadings = ({
-    readings,
-    statusMap,
-    toggleStatus
+    readings
+
 }) => {
     return (
         <div className="row">
@@ -30,18 +29,7 @@ export const CardsReadings = ({
                                 Revisar lectura
                             </Link>
 
-                            <button
-                                className={`btn ${
-                                    statusMap[reading.id]
-                                        ? "btn-success"
-                                        : "btn-outline-secondary"
-                                }`}
-                                onClick={() => toggleStatus(reading.id)}
-                            >
-                                {statusMap[reading.id]
-                                    ? "Completada"
-                                    : "Pendiente"}
-                            </button>
+                            
 
                         </div>
                     </div>
