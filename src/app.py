@@ -29,12 +29,22 @@ load_dotenv()
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-GOOGLE_CLIENT_SECRETS_FILE = "google_credentials/client_secret.json"
+GOOGLE_CLIENT_SECRETS_FILE = os.getenv("GOOGLE_CLIENT_SECRETS_FILE",
+                                       "google_credentials/client_secret.json")
+GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
 SCOPES = [
     "https://www.googleapis.com/auth/calendar",
     "https://www.googleapis.com/auth/calendar.events"
 ]
 resend.api_key = os.getenv("RESEND_API_KEY")
+
+
+def get_google_redirect_uri():
+    env_uri = os.getenv("GOOGLE_REDIRECT_URI")
+    if env_uri:
+        return env_uri
+
+    return url_for("google_callback", _external=True)
 
 
 def role_required(*roles):
@@ -77,7 +87,7 @@ def send_email(to_email, subject, content):
 
     try:
         resend.Emails.send({
-            "from": "onboarding@resend.dev",  # puedes usar este mientras
+            "from": "Academica <onboarding@resend.dev>",
             "to": to_email,
             "subject": subject,
             "html": content
@@ -290,11 +300,12 @@ def create_new_reading():
     db.session.commit()
 
     send_email(
-        "ponercorreo",
-        "¡Hola Estudiante de Academica!, tienes una nueva lectura asignada",
+        "soportedeacademica@outlook.com", #correo sandboxeado
+        "¡Hola Estudiante de Academica!, tienes una nueva lectura asignada", #subject o encabezado
 
-        f"""
-        <h2>Nueva lectura asiganada por el profesor: {new_reading.teacher.name}</h2>
+#contenido html 
+        f""" 
+        <h2>Nueva lectura asiganada por el profesor: {new_reading.teacher.name}</h2>    
 
         <p><strong>Título:</strong> {new_reading.title}</p>
 
@@ -377,6 +388,61 @@ def delete_reading(reading_id):
     db.session.commit()
 
     return jsonify(f'Se ha eliminado correctamente la lectura {reading.title} '), 200
+
+# ENDPOINT READINGS BUSCAR LECTURA POR USER ID EN GRUPO PARA ESTUDIANTE
+
+
+@app.route('/student/readings', methods=['GET'])
+@jwt_required()
+def get_student_readings():
+
+    # para id desde el token
+    student_id = get_jwt_identity()
+
+    # filtrar id en grupos
+    student_groups = Students_Group.query.filter(
+        Students_Group.user_id == student_id
+    ).all()
+
+    if not student_groups:
+        return jsonify("Usuario no encontrado"), 400
+
+    # los ids de grupos
+    group_ids = []
+    for sg in student_groups:
+        group_ids.append(sg.group_id)
+
+    #  lecturas de ids de grupos
+    readings = Reading.query.filter(
+        Reading.group_id.in_(group_ids)
+    ).all()
+
+    readings_serialized = []
+    for reading in readings:
+        readings_serialized.append(reading.serialize())
+
+    return jsonify(readings_serialized), 200
+
+# ENDPOINT READINGS BUSCAR LECTURA POR USER ID PARA TEACHERS
+
+
+@app.route('/teacher/readings', methods=['GET'])
+@jwt_required()
+def get_teacher_readings():
+
+    # id del profesor desde el token
+    teacher_id = get_jwt_identity()
+
+    # traer lecturas creadas por ese profesor
+    readings = Reading.query.filter(
+        Reading.teacher_id == teacher_id
+    ).all()
+
+    readings_serialized = []
+    for reading in readings:
+        readings_serialized.append(reading.serialize())
+
+    return jsonify(readings_serialized), 200
 
 
 #                  ENDPOINT REGISTER
@@ -644,7 +710,7 @@ def get_group_students(group_id):
             continue
 
         students.append({
-            "student_group_id": sg.id, #agregado
+            "student_group_id": sg.id,  # agregado
             "user_id": sg.user.id,
             "name": sg.user.name,
             "email": sg.user.email
@@ -698,9 +764,6 @@ def get_my_groups():
         })
 
     return jsonify(result), 200
-
-
-
 
 
 # SUBMISION POST SUBE TAREA DE UN ESTUDIANTE CON ID
@@ -923,8 +986,7 @@ def get_submissions():
         return jsonify({"msg": "Error interno del servidor", "error": str(e)}), 500
 
 
-
-@app.route("/register-staff", methods=["POST"])
+@app.route('/register-staff', methods=['POST'])
 def register_staff():
     body = request.get_json()
 
@@ -1034,8 +1096,6 @@ def get_status_by_submission(submission_id):
     }), 200
 
 
-
-
 @app.route('/statuses', methods=['GET'])
 def get_statuses():
     statuses = Status.query.all()
@@ -1065,38 +1125,56 @@ def get_status_by_id(status_id):
 
 
 @app.route('/statuses/<int:status_id>', methods=['PUT'])
+@jwt_required()
+@role_required("TEACHER", "ADMIN")
 def update_status(status_id):
     status = Status.query.get(status_id)
     if not status:
         return jsonify({"msg": "No hay calificación disponible"}), 404
-    body = request.get_json(silent=True)
-    if body is None:
-        return jsonify({"msg": "Complete los campos requeridos"}), 400
-    if 'state' in body:
-        status.state = body['state']
-    if 'feedback' in body:
-        status.feedback = body['feedback']
+
+    body = request.get_json(silent=True) or {}
+
+    if "state" in body:
+        status.state = str(body["state"]).upper()
+    if "feedback" in body:
+        status.feedback = body["feedback"]
+
+   
+    status.teacher_id = int(get_jwt_identity())
+
     db.session.commit()
-    return jsonify({"msg": "Calificación actualizada exitosamente"}), 200
+    return jsonify({"msg": "Calificación actualizada", "status": status.serialize()}), 200
 
 
-@app.route('/statuses/<int:status_id>', methods=['POST'])
-def create_status(status_id):
-    body = request.get_json(silent=True)
-    if body is None:
-        return jsonify({"msg": "Complete los campos requeridos"}), 400
-    if 'submission_id' not in body:
-        return jsonify({"msg": "El campo submission_id no puede estar vacío"}), 400
-    if 'state' not in body:
-        return jsonify({"msg": "El campo state no puede estar vacío"}), 400
+
+@app.route('/statuses', methods=['POST'])
+@jwt_required()
+@role_required("TEACHER", "ADMIN")
+def create_status():
+    body = request.get_json(silent=True) or {}
+
+    if "submission_id" not in body:
+        return jsonify({"msg": "submission_id requerido"}), 400
+    if "state" not in body:
+        return jsonify({"msg": "state requerido"}), 400
+
+ 
+    existing = Status.query.filter_by(submission_id=body["submission_id"]).first()
+    if existing:
+        return jsonify({"msg": "Ya existe una calificación para esta entrega", "status_id": existing.id}), 409
+
     new_status = Status(
-        submission_id=body['submission_id'],
-        state=body['state'],
-        feedback=body.get('feedback', '')
+        submission_id=int(body["submission_id"]),
+        state=str(body["state"]).upper(),
+        feedback=body.get("feedback", ""),
+        teacher_id=int(get_jwt_identity())  
     )
+
     db.session.add(new_status)
     db.session.commit()
-    return jsonify({"msg": "Calificación creada exitosamente"}), 201
+
+    return jsonify({"msg": "Calificación creada", "status": new_status.serialize()}), 201
+
 
 #         API CALENDARIO DE GOOGLE
 
@@ -1350,10 +1428,28 @@ def google_delete_event(event_id):
 
 @app.route("/google/login")
 def google_login():
-    flow = Flow.from_client_secrets_file(
-        GOOGLE_CLIENT_SECRETS_FILE,
+    if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
+        return jsonify({"msg": "Faltan GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET en el .env"}), 500
+
+    redirect_uri = os.getenv("GOOGLE_REDIRECT_URI")
+    if not redirect_uri:
+        return jsonify({"msg": "Falta GOOGLE_REDIRECT_URI en el .env"}), 500
+
+    client_config = {
+        "web": {
+            "client_id": GOOGLE_CLIENT_ID,
+            "client_secret": GOOGLE_CLIENT_SECRET,
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "redirect_uris": [redirect_uri],
+        }
+    }
+
+    flow = Flow.from_client_config(
+        client_config,
         scopes=SCOPES,
-        redirect_uri="https://potential-acorn-r4gvrv455x47h54xq-3001.app.github.dev/google/callback"
+        redirect_uri=redirect_uri
     )
 
     authorization_url, state = flow.authorization_url(
@@ -1372,11 +1468,18 @@ def google_login():
 def google_callback():
     state = session.get("state")
 
-    flow = Flow.from_client_secrets_file(
-        GOOGLE_CLIENT_SECRETS_FILE,
+    flow = Flow.from_client_config(
+        {
+            "web": {
+                "client_id": os.getenv("GOOGLE_CLIENT_ID"),
+                "client_secret": os.getenv("GOOGLE_CLIENT_SECRET"),
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+            }
+        },
         scopes=SCOPES,
         state=state,
-        redirect_uri="https://potential-acorn-r4gvrv455x47h54xq-3001.app.github.dev/google/callback"
+        redirect_uri=os.getenv("GOOGLE_REDIRECT_URI"),
     )
 
     flow.fetch_token(authorization_response=request.url)
@@ -1386,7 +1489,8 @@ def google_callback():
     with open("google_credentials/token.json", "w") as token:
         token.write(credentials.to_json())
 
-    return jsonify({"msg": "Google Calendar conectado correctamente"})
+    return jsonify({"msg": "Google Calendar conectado correctamente"}), 200
+
 
 
 @app.route("/google/calendars", methods=["GET"])
@@ -1668,10 +1772,6 @@ def get_google_event(event_id):
         }), 200
     except Exception as e:
         return jsonify({"msg": "Error obteniendo evento", "error": str(e)}), 500
-
-
-
-
 
 
 # this only runs if `$ python src/main.py` is executed

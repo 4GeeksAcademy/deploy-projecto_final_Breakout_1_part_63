@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 
 export const TeacherSubmissionsList = () => {
   const { todoId } = useParams();
-
+  const navigate = useNavigate();
   const [todo, setTodo] = useState(null);
   const [students, setStudents] = useState([]);
   const [submissions, setSubmissions] = useState([]);
@@ -14,6 +14,17 @@ export const TeacherSubmissionsList = () => {
   const perPage = 10;
 
   const backendBase = (import.meta.env.VITE_BACKEND_URL || "").trim();
+  const token = localStorage.getItem("token");
+
+  const safeReadJsonOrText = async (resp) => {
+    const ct = resp.headers.get("content-type") || "";
+    if (ct.includes("application/json")) {
+      const json = await resp.json().catch(() => null);
+      return { json, text: null };
+    }
+    const text = await resp.text().catch(() => "");
+    return { json: null, text };
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -27,42 +38,65 @@ export const TeacherSubmissionsList = () => {
       try {
         if (!backendBase) {
           throw new Error(
-            "VITE_BACKEND_URL no está definido. En Codespaces poné la URL del backend (puerto 3001)."
+            "VITE_BACKEND_URL no está definido ."
           );
         }
 
         if (!todoId) {
-          throw new Error("Falta todoId en la URL. Ej: /teachersubmissionslist/1");
+          throw new Error("Falta todoId en la URL");
         }
 
-        const token = localStorage.getItem("token");
-
         const todoResp = await fetch(`${backendBase}/todos/${todoId}`);
-        const todoData = await todoResp.json().catch(() => ({}));
-        if (!todoResp.ok) throw new Error(todoData?.msg || "Error al cargar la tarea");
+        const todoParsed = await safeReadJsonOrText(todoResp);
+
+        if (!todoResp.ok) {
+          throw new Error(
+            todoParsed.json?.msg || todoParsed.text || "Error al cargar la tarea"
+          );
+        }
+
+        const todoData = todoParsed.json;
         setTodo(todoData);
 
-        if (!todoData.group_id) {
-          throw new Error("La tarea no tiene group_id (no se puede listar alumnos).");
+        if (!todoData?.group_id) {
+          throw new Error("La tarea no tiene group_id .");
         }
 
         const studentsResp = await fetch(
           `${backendBase}/groups/${todoData.group_id}/students`,
-          {
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-          }
+          { headers: token ? { Authorization: `Bearer ${token}` } : {} }
         );
-        const studentsData = await studentsResp.json().catch(() => ({}));
+        const studentsParsed = await safeReadJsonOrText(studentsResp);
+
         if (!studentsResp.ok) {
-          throw new Error(studentsData?.msg || "Error al cargar alumnos del grupo");
+          throw new Error(
+            studentsParsed.json?.msg ||
+              studentsParsed.text ||
+              "Error al cargar alumnos del grupo"
+          );
         }
-        setStudents(Array.isArray(studentsData) ? studentsData : []);
 
-        const subResp = await fetch(`${backendBase}/submissions?todo_id=${todoId}`);
-        const subData = await subResp.json().catch(() => ({}));
-        if (!subResp.ok) throw new Error(subData?.msg || "Error al cargar entregas");
+        const studentsData = Array.isArray(studentsParsed.json)
+          ? studentsParsed.json
+          : [];
+        setStudents(studentsData);
 
-        const subs = Array.isArray(subData.submissions) ? subData.submissions : [];
+        const subResp = await fetch(`${backendBase}/submissions?todo_id=${todoId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        const subParsed = await safeReadJsonOrText(subResp);
+
+        if (!subResp.ok) {
+          throw new Error(
+            subParsed.json?.msg || subParsed.text || "Error al cargar entregas"
+          );
+        }
+
+        const subs = Array.isArray(subParsed.json?.submissions)
+          ? subParsed.json.submissions
+          : Array.isArray(subParsed.json)
+          ? subParsed.json
+          : [];
         setSubmissions(subs);
 
         const statusMap = {};
@@ -83,28 +117,36 @@ export const TeacherSubmissionsList = () => {
     };
 
     load();
-  }, [todoId, backendBase]);
+  }, [todoId, backendBase, token]);
 
   const rows = useMemo(() => {
     const subByStudentId = new Map();
-    for (const s of submissions) subByStudentId.set(String(s.student_id), s);
+    for (const s of submissions) {
+      if (s?.student_id != null) subByStudentId.set(String(s.student_id), s);
+    }
 
-    return students.map((st) => {
-      const sub = subByStudentId.get(String(st.user_id)) || null;
+    return (students || []).map((st) => {
+      const stKey = String(st.user_id);
+      const sub = subByStudentId.get(stKey) || null;
       const status = sub ? statusBySubmissionId[sub.id] : null;
+
+      const state = status?.state
+        ? String(status.state).toUpperCase()
+        : sub
+        ? "ENTREGADO"
+        : "PENDIENTE";
 
       return {
         user_id: st.user_id,
         name: st.name,
         email: st.email,
         submission: sub,
-        state: status?.state || (sub ? "entregado" : "pendiente"),
-        feedback: status?.feedback || "",
+        state,
       };
     });
   }, [students, submissions, statusBySubmissionId]);
 
-  const totalPages = Math.ceil(rows.length / perPage);
+  const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
   const currentRows = useMemo(() => {
     const start = (currentPage - 1) * perPage;
     return rows.slice(start, start + perPage);
@@ -123,40 +165,40 @@ export const TeacherSubmissionsList = () => {
       </div>
 
       <div className="list-group">
-        {currentRows.map((r) => (
-          <div
-            key={r.user_id}
-            className="list-group-item d-flex justify-content-between align-items-center"
-          >
-            <div className="me-3">
-              <div className="fw-semibold">{r.name}</div>
-              <div className="text-muted small">{r.email}</div>
-            </div>
+        {currentRows.map((r) => {
+          const isPending = String(r.state).toUpperCase() === "PENDIENTE";
 
-            <div className="d-flex align-items-center gap-3">
-              <span
-                className={`badge ${
-                  r.state === "pendiente" ? "bg-secondary" : "bg-success"
-                }`}
-              >
-                {r.state}
-              </span>
+          return (
+            <div
+              key={`${r.user_id}-${r.email}`}
+              className="list-group-item d-flex justify-content-between align-items-center"
+            >
+              <div className="me-3">
+                <div className="fw-semibold">{r.name}</div>
+                <div className="text-muted small">{r.email}</div>
+              </div>
 
-              {r.submission ? (
-                <Link
-                  to={`/teacher/submissions/review/${todoId}/${r.submission.id}`}
-                  className="btn btn-sm btn-primary"
-                >
-                  Corregir
-                </Link>
-              ) : (
-                <button className="btn btn-sm btn-outline-secondary" disabled>
-                  Sin entrega
-                </button>
-              )}
+              <div className="d-flex align-items-center gap-3">
+                <span className={`badge ${isPending ? "bg-secondary" : "bg-success"}`}>
+                  {r.state}
+                </span>
+
+                {r.submission ? (
+                  <Link
+                    to={`/homeTeacher/todos/${todoId}/submissions/${r.submission.id}`}
+                    className="btn btn-sm btn-primary"
+                  >
+                    Corregir    
+                  </Link>
+                ) : (
+                  <button className="btn btn-sm btn-outline-secondary" disabled>
+                    Sin entrega
+                  </button>  
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {totalPages > 1 && (
@@ -164,9 +206,7 @@ export const TeacherSubmissionsList = () => {
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <button
               key={page}
-              className={`btn me-2 ${
-                page === currentPage ? "btn-dark" : "btn-outline-dark"
-              }`}
+              className={`btn me-2 ${page === currentPage ? "btn-dark" : "btn-outline-dark"}`}
               onClick={() => setCurrentPage(page)}
             >
               {page}
@@ -174,6 +214,14 @@ export const TeacherSubmissionsList = () => {
           ))}
         </div>
       )}
+
+       <button
+    type="button"
+    className="btn btn-sm btn-outline-secondary m-3"
+    onClick={() => navigate(-1)}
+  >
+    ← Volver
+  </button>
     </div>
   );
 };

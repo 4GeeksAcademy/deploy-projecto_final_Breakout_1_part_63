@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
 export const TeacherSubmissionReview = () => {
   const { store } = useGlobalReducer();
   const { todoId, submissionId } = useParams();
-
+  const navigate = useNavigate();
   const backend = (import.meta.env.VITE_BACKEND_URL || "").trim();
   const token = localStorage.getItem("token");
 
@@ -188,7 +188,7 @@ export const TeacherSubmissionReview = () => {
           throw new Error(msg);
         }
       } else {
-        const postResp = await fetch(`${backend}/statuses/1`, {
+        const postResp = await fetch(`${backend}/statuses`, {
           method: "POST",
           headers: authHeaders,
           body: JSON.stringify(payload),
@@ -227,7 +227,7 @@ export const TeacherSubmissionReview = () => {
       <div className="d-flex justify-content-between align-items-start gap-3 mb-3">
         <div>
           <h2 className="mb-1">Revisión de entrega</h2>
-         
+
         </div>
 
         {role && (
@@ -292,7 +292,7 @@ export const TeacherSubmissionReview = () => {
         </div>
       </div>
 
-      <div className="card shadow-sm mb-5">
+      <div className="card shadow-sm mb-3">
         <div className="card-body">
           <h5 className="mb-3">Corrección</h5>
 
@@ -342,6 +342,13 @@ export const TeacherSubmissionReview = () => {
           </div>
         </div>
       </div>
+      <button
+        type="button"
+        className="btn btn-sm btn-outline-secondary mb-3"
+        onClick={() => navigate(-1)}
+      >
+        ← Volver
+      </button>
     </div>
   );
 };
