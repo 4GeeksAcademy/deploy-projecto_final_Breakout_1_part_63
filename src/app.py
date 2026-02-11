@@ -924,33 +924,39 @@ def get_submissions():
 
 
 
-@app.route('/register-staff', methods=['POST'])
+@app.route("/register-staff", methods=["POST"])
 def register_staff():
-    body = request.get_json(silent=True)
-    if body is None:
-        return jsonify({"msg": "Complete los campos requeridos"}), 400
-    if 'email' not in body:
-        return jsonify({"msg": "El campo email no puede estar vacío"}), 400
-    if 'password' not in body:
-        return jsonify({"msg": "El campo password no puede estar vacío"}), 400
-    if 'name' not in body:
-        return jsonify({"msg": "El campo name no puede estar vacío"}), 400
-    if 'role' not in body:
-        return jsonify({"msg": "Determine el rol del nuevo usuario"}), 400
-    existing_user = User.query.filter_by(email=body['email']).first()
-    if existing_user:
-        return jsonify({"msg": "User already exists"}), 400
-    new_admin = User(
-        email=body['email'],
-        password=body['password'],
-        name=body['name'],
-        role=body['role'],
-        is_active=True
-    )
-    db.session.add(new_admin)
-    db.session.commit()
-    return jsonify({"msg": f"Usuario {body['role']} registrado exitosamente"}), 201
+    body = request.get_json()
 
+    name = body.get("name")
+    email = body.get("email")
+    password = body.get("password")
+    role = body.get("role")
+
+    if not name or not email or not password or not role:
+        return jsonify({"msg": "Datos incompletos"}), 400
+
+    hashed_password = generate_password_hash(password)
+
+    new_user = User(
+        name=name,
+        email=email,
+        password=hashed_password,
+        role=role
+    )
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Staff creado correctamente",
+        "user": {
+            "id": new_user.id,
+            "name": new_user.name,
+            "email": new_user.email,
+            "role": new_user.role
+        }
+    }), 201
 
 @app.route('/todos', methods=['GET'])
 def get_todos():
