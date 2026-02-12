@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, ForeignKey, Date, Enum as SQLEnum, DateTime
+from sqlalchemy import String, Boolean, ForeignKey, Date, Enum as SQLEnum, DateTime, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
 
@@ -78,7 +78,7 @@ class Todo(db.Model):
     __tablename__ = 'todo'
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
-    description: Mapped[str] = mapped_column(String(255))
+    description: Mapped[str] = mapped_column(Text)
     archive_url: Mapped[str] = mapped_column(String(500),)
     due_date: Mapped[Date] = mapped_column(Date, nullable=False)
     teacher_id: Mapped[int] = mapped_column(ForeignKey('user.id'), nullable=False)
