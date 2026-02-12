@@ -77,7 +77,7 @@ class Group(db.Model):
 class Todo(db.Model):
     __tablename__ = 'todo'
     id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(100), nullable=False)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(String(255))
     archive_url: Mapped[str] = mapped_column(String(500),)
     due_date: Mapped[Date] = mapped_column(Date, nullable=False)
