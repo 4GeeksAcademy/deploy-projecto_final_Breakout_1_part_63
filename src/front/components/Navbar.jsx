@@ -52,18 +52,27 @@ export const Navbar = () => {
 
           {isAuthenticated && role === "TEACHER" && (
             <>
-              <Link to="/readings-create">
-                <button className="btn btn-info ms-2">
-                  Crear Lectura
-                </button>
-              </Link>
 
               <Link to="/crear-tarea">
                 <button className="btn btn-info ms-2">
                   Crear Tarea
                 </button>
               </Link>
-            </>
+            
+
+            <Link to="/readings-create">
+                <button className="btn btn-info ms-2">
+                  Crear Lectura
+                </button>
+              </Link>
+
+              <Link to="/teacher/readings">
+                <button className="btn btn-info ms-2">
+                  Lecturas Creadas
+                </button>
+                 </Link>
+
+                 </>
           )}
 
           {isAuthenticated && role === "ADMIN" && (
@@ -94,7 +103,14 @@ export const Navbar = () => {
                 <button className="btn btn-success ms-2">
                   Mis Lecturas
                 </button>
-              </Link>
+  </Link>
+
+                
+            
+
+          
+
+              
             </>
           )}
 

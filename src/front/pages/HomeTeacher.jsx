@@ -1,13 +1,20 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { TeacherTodoCard } from "../components/TeacherTodoCard";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { ReadingCards } from "../components/ReadingCards";
 import { Link } from "react-router-dom";
+import { ReadingCardHomeTeacher } from "../components/ReadingCardHomeTeacher.jsx";
 
 
 export const HomeTeacher = () => {
   const { store, dispatch } = useGlobalReducer();
   const todos = store.todos || [];
+  const [readings, setReadings] = useState([]);
+     const [err, setErr] = useState(null);
+
+     const currentReadings = [...readings]
+  .sort((a, b) => b.id - a.id) // más reciente primero
+  .slice(0, 4);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -56,33 +63,69 @@ export const HomeTeacher = () => {
     fetchTodos();
   }, [dispatch]);
 
-  const fetchReadings = async () => {
-    try {
-      const backend = import.meta.env.VITE_BACKEND_URL;
-      const resp = await fetch(`${backend}/readings`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+  // const fetchReadings = async () => {
+  //   try {
+  //     const backend = import.meta.env.VITE_BACKEND_URL;
+  //     const resp = await fetch(`${backend}/readings`, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //       },
+  //     });
 
 
 
-      const data = await resp.json();
+  //     const data = await resp.json();
 
 
-      dispatch({
-        type: "GET_READINGS_SUCCESS",
-        payload: Array.isArray(data) ? data : [],
-      });
-    } catch (error) {
-      console.error("Error fetching readings:", error);
-    }
-  };
+  //     dispatch({
+  //       type: "GET_READINGS_SUCCESS",
+  //       payload: Array.isArray(data) ? data : [],
+  //     });
+  //   } catch (error) {
+  //     console.error("Error fetching readings:", error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchReadings();
+  // }, [dispatch]);
+
+  //traer lecturas de profesor 
 
   useEffect(() => {
-    fetchReadings();
-  }, [dispatch]);
+        getTeacherReadings();
+    }, []);
+
+    const getTeacherReadings = async () => {
+        setErr(null);
+
+        try {
+            const backend = import.meta.env.VITE_BACKEND_URL;
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                throw new Error("Usuario no autenticado");
+            }
+
+            const resp = await fetch(`${backend}/teacher/readings`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            const data = await resp.json().catch(() => ([]));
+
+            if (!resp.ok) {
+                throw new Error("Error al cargar lecturas");
+            }
+
+            setReadings(data);
+
+        } catch (error) {
+            setErr(error.message);
+        }
+    };
 
   //traer nombre
 
@@ -155,7 +198,7 @@ export const HomeTeacher = () => {
         </div>
       </div>
 
-      <div className="container mt-4">
+      {/* <div className="container mt-4">
 
 
           <Link
@@ -173,7 +216,40 @@ export const HomeTeacher = () => {
             <ReadingCards key={reading.id} reading={reading} />
           ))}
         </div>
+      </div> */}
+
+      <div className="container mt-5">
+        <div className="row">
+          <div className="col-6">
+        
+        <h2 className="fw-bold mb-4">Lecturas Creadas <span className="fs-4 fw-lighter">(Vista Previa)</span></h2> 
+        </div>
+<div className="col-6 text-end">
+          
+<Link to="/teacher/readings">
+                <button className="btn btn-outline-dark fs-6 p-1 mt-1">
+                  Ver todas las lecturas →
+                </button>
+                 </Link>
+     
       </div>
+      
+      </div>
+     
+        {currentReadings.length === 0 && (
+          <p>No hay lecturas creadas</p>
+        )}
+      
+        <div className="row g-4">
+          {currentReadings.map(reading => (
+            <div key={reading.id} className="col-md-6 col-lg-3">
+              <ReadingCardHomeTeacher reading={reading} />
+            </div>
+          ))}
+        </div>
+       
+      </div>
+
     </div>
   );
 };
