@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
-import tareaslogo from "../assets/img/tareaslogo.png";
 import { RandomImgTarea } from "../components/RandomImgTarea";
 
 
