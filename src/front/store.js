@@ -93,5 +93,11 @@ export default function storeReducer(store, action = {}) {
 
     default:
       throw Error("Unknown action.");
+
+
+
+    case "SET_STUDENT_GROUP_ID":
+       return { ...store, student_group_id: action.payload };
+
   }
 }

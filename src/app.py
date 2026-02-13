@@ -19,7 +19,7 @@ from api.models import db
 from api.models import Students_Group, Group, Todo, Submission, Status, User, Reading
 from api.utils import APIException, generate_sitemap
 from flask_migrate import Migrate
-from flask import Flask, request, jsonify, url_for, send_from_directory, session, redirect,Blueprint
+from flask import Flask, request, jsonify, url_for, send_from_directory, session, redirect, Blueprint
 import os
 import secrets
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -151,7 +151,6 @@ app.register_blueprint(api, url_prefix='/api')
 # Handle/serialize errors like a JSON object
 
 
-
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
@@ -194,7 +193,8 @@ def get_current_user():
     if not user:
         return jsonify({"msg": "Usuario no encontrado"}), 404
 
-    return jsonify(user.serialize()), 200
+    return jsonify(user.serialize()), 200 
+
 
 def send_reset_email(to_email, reset_link, name=""):
     resend.Emails.send({
@@ -212,6 +212,7 @@ def send_reset_email(to_email, reset_link, name=""):
             <p>Este link expira en 15 minutos.</p>
         """
     })
+
 
 @app.route('/forgot-password', methods=['POST'])
 def forgot_password():
@@ -244,6 +245,7 @@ def forgot_password():
     return jsonify({
         "msg": "Si el email existe, se enviará un link de recuperación"
     }), 200
+
 
 @app.route('/reset-password', methods=['POST'])
 def reset_password():
@@ -288,12 +290,13 @@ def get_all_readings():
 
 
 @app.route('/reading/individual/<int:reading_id>', methods=['GET'])
-def get_reading_individual (reading_id):
+def get_reading_individual(reading_id):
     reading = Reading.query.get(reading_id)
     reading_serialized = reading.serialize()
     return jsonify(reading_serialized), 200
 
-#MOSTRAR LECTURA POR ID CON AUTETICACION DE PROFESOR 
+# MOSTRAR LECTURA POR ID CON AUTETICACION DE PROFESOR
+
 
 @app.route('/reading/<int:reading_id>', methods=['GET'])
 @jwt_required()
@@ -312,8 +315,7 @@ def get_reading(reading_id):
     return jsonify(reading.serialize()), 200
 
 
-
-#CREAR LECTURA NUEVO
+# CREAR LECTURA NUEVO
 
 @app.route('/readings/create', methods=["POST"])
 @role_required("TEACHER", "ADMIN")
@@ -322,7 +324,7 @@ def create_reading_automatic():
         body = request.get_json(silent=True) or {}
 
         required = ["title", "description",
-                     "group_id"]
+                    "group_id"]
         missing = [f for f in required if f not in body or body[f] in [None, ""]]
         if missing:
             return jsonify({"msg": f"Faltan campos obligatorios: {', '.join(missing)}"}), 400
@@ -331,10 +333,7 @@ def create_reading_automatic():
         if not group:
             return jsonify({"msg": f"No existe un grupo con group_id={body['group_id']}"}), 400
 
-
         teacher_id = int(get_jwt_identity())
-
-        
 
         new_reading = Reading(
             title=body["title"],
@@ -351,7 +350,7 @@ def create_reading_automatic():
             "msg": "Lectura automática creada exitosamente",
             "reading_id": new_reading.id
         }), 201
-    
+
     except Exception as e:
         db.session.rollback()
         return jsonify({
@@ -386,10 +385,11 @@ def create_new_reading():
     db.session.commit()
 
     send_email(
-        "soportedeacademica@outlook.com", #correo sandboxeado
-        "¡Hola Estudiante de Academica!, tienes una nueva lectura asignada", #subject o encabezado
+        "soportedeacademica@outlook.com",  # correo sandboxeado
+        # subject o encabezado
+        "¡Hola Estudiante de Academica!, tienes una nueva lectura asignada",
 
-#contenido html 
+        # contenido html
         f""" 
         <h2>Nueva lectura asiganada por el profesor: {new_reading.teacher.name}</h2>    
 
@@ -424,7 +424,7 @@ def edit_reading_antiguo(reading_id):
 
     return jsonify({'msg': f'Lectura {reading.name} actualizada'}), 200
 
-#MODIFICAR LECTURAS MEJORADO
+# MODIFICAR LECTURAS MEJORADO
 
 
 @app.route('/editreading/<int:id>', methods=['PUT'])
@@ -500,7 +500,8 @@ def delete_reading_test(reading_id):
 
     return jsonify(f'Se ha eliminado correctamente la lectura {reading.title} '), 200
 
-#ELIMINAR READING CON AUTENTICACION
+# ELIMINAR READING CON AUTENTICACION
+
 
 @app.route('/deletereading/<int:reading_id>', methods=['DELETE'])
 @jwt_required()
@@ -513,7 +514,6 @@ def delete_reading(reading_id):
 
     current_user_id = int(get_jwt_identity())
 
-   
     if reading.teacher_id != current_user_id:
         return jsonify({'msg': 'No autorizado'}), 403
 
@@ -835,6 +835,7 @@ def add_student_to_group(group_id):
         db.session.commit()
 
         return jsonify({
+            
             "msg": "Estudiante agregado al grupo",
             "group_id": group_id,
             "user_id": user.id
@@ -914,6 +915,21 @@ def get_my_groups():
     return jsonify(result), 200
 
 
+# STUDENTS_GROUP GET
+
+
+@app.route("/my-student-group", methods=["GET"])
+@jwt_required()
+def my_student_group():
+    user_id = get_jwt_identity()
+
+    sg = Students_Group.query.filter_by(user_id=user_id).first()
+    if not sg:
+        return jsonify({"msg": "Este usuario no tiene grupo"}), 404
+
+    return jsonify(sg.serialize()), 200
+
+
 # SUBMISION POST SUBE TAREA DE UN ESTUDIANTE CON ID
 @app.route("/submission", methods=["POST"])
 def submission():
@@ -937,20 +953,19 @@ def submission():
         if not todo:
             return jsonify({"msg": "La tarea no existe"}), 404
 
-        user = User.query.get(student_id)
-        if not user:
-            return jsonify({"msg": "Usuario no existe"}), 404
+        sg = Students_Group.query.get(student_id)
+        if not sg:
+            return jsonify({"msg": "Student_Group no existe"}), 404
 
-        if user.role.lower() != "student":  # el student tiene q venir en minuscula sino ponerle un .lower()
+
+        if not sg.user or sg.user.role.lower() != "student":
             return jsonify({"msg": "Solo un alumno puede crear una entrega"}), 403
-
+        
         new_submission = Submission(
-
             description=description,
             response_url=response_url,
             todo_id=todo_id,
             student_id=student_id
-
         )
 
         db.session.add(new_submission)
@@ -958,22 +973,14 @@ def submission():
 
         return jsonify({
             "msg": "Entrega creada",
-            "submission": {
-                "id": new_submission.id,
-                "todo_id": new_submission.todo_id,
-                "student_id": new_submission.student_id,
-                "description": new_submission.description,
-                "response_url": new_submission.response_url
-
-            }
-
-
-
+            "submission": new_submission.serialize()
         }), 201
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({"msg": "Errpr interno del servidor", "error": str(e)}), 500
+        return jsonify({"msg": "Error interno del servidor", "error": str(e)}), 500
+        
+
 
 # SUBMISION PUT EDITA TAREA SUBIDA POR UN ESTUDIANTE CON ID
 
@@ -1168,6 +1175,7 @@ def register_staff():
         }
     }), 201
 
+
 @app.route('/todos', methods=['GET'])
 def get_todos():
     todos = Todo.query.all()
@@ -1287,12 +1295,10 @@ def update_status(status_id):
     if "feedback" in body:
         status.feedback = body["feedback"]
 
-   
     status.teacher_id = int(get_jwt_identity())
 
     db.session.commit()
     return jsonify({"msg": "Calificación actualizada", "status": status.serialize()}), 200
-
 
 
 @app.route('/statuses', methods=['POST'])
@@ -1306,8 +1312,8 @@ def create_status():
     if "state" not in body:
         return jsonify({"msg": "state requerido"}), 400
 
- 
-    existing = Status.query.filter_by(submission_id=body["submission_id"]).first()
+    existing = Status.query.filter_by(
+        submission_id=body["submission_id"]).first()
     if existing:
         return jsonify({"msg": "Ya existe una calificación para esta entrega", "status_id": existing.id}), 409
 
@@ -1315,7 +1321,7 @@ def create_status():
         submission_id=int(body["submission_id"]),
         state=str(body["state"]).upper(),
         feedback=body.get("feedback", ""),
-        teacher_id=int(get_jwt_identity())  
+        teacher_id=int(get_jwt_identity())
     )
 
     db.session.add(new_status)
@@ -1457,7 +1463,7 @@ def create_todo_automatic():
 def google_create_event():
     from googleapiclient.discovery import build
     from google.oauth2.credentials import Credentials
-    import datetime
+    import datetim
 
     body = request.get_json(silent=True)
     if not body or 'summary' not in body or 'start' not in body or 'end' not in body:
@@ -1638,7 +1644,6 @@ def google_callback():
         token.write(credentials.to_json())
 
     return jsonify({"msg": "Google Calendar conectado correctamente"}), 200
-
 
 
 @app.route("/google/calendars", methods=["GET"])
