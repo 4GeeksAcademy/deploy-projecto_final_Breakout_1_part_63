@@ -143,7 +143,7 @@ export const Login = () => {
               </div>
             <div className="text-center">
               <button className="btn btn-info rounded-pill px-5">
-                Login
+                Ingresar
               </button>
             </div>
           </form>
