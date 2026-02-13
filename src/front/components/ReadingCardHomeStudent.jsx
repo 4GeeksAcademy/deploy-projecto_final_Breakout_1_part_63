@@ -18,11 +18,11 @@ export const ReadingCardHomeStudent = ({ reading }) => {
 
 			<div className="card-body d-flex flex-column">
 
-				<h5 className="card-title fw-bold mb-3 text-truncate">
+				<h5 className="card-title fw-bold mb-3 text-center">
 					{reading.title}
 				</h5>
 
-				<div className="mt-auto">
+				<div className="mt-auto card-footer">
 					<button
 						className="btn btn-primary w-100 rounded-3"
 						onClick={() => navigate(`/reading/${reading.id}`)}

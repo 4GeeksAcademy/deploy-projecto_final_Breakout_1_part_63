@@ -15,26 +15,26 @@ export const CardsReadingsTeacher = ({
                         {<RandomImgLecturas />}
 
 
-                        <div className="card-body">
+                        <div className="card-body text-center">
 
-                            <h5 className="card-title">
+                            <h5 className="card-title mb-3">
                                 {reading.title}
                             </h5>
-
+<div className="card-footer">
                             <Link
                                 to={`/reading/teacher/${reading.id}`}
-                                className="btn btn-primary me-2"
+                                className="btn btn-primary me-2 fs-5 "
                             >
                                 Ver lectura
                             </Link>
                             <Link
                                 to={`/reading/edit/${reading.id}`}
-                                className="btn btn-warning me-2"
+                                className="btn btn-warning ms-2 fs-5"
                             >
                                 Editar lectura
                             </Link>
 
-
+</div>
                         </div>
                     </div>
                 </div>

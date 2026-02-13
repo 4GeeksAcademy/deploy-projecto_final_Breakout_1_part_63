@@ -104,7 +104,7 @@ export const StudentViewReadings = () => {
         <div className="container mt-5">
            
         <Link to="/homeStudent">
-								<button className="btn btn-light">
+								<button className="btn btn-outline-dark fs-6 p-1">
 									←   Volver a Página Principal
 								</button>
 							</Link>
