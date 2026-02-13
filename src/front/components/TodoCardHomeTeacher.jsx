@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { RandomImgTarea } from "./RandomImgTarea";
 
-export const TodoCardHomeStudent = ({ todo }) => {
+export const TodoCardHomeTeacher = ({ todo }) => {
 
     const navigate = useNavigate();
 

@@ -21,7 +21,7 @@ export const ReadingCardHomeTeacher = ({ reading }) => {
                 <h5 className="card-title fw-bold mb-3 text-center">
                     {reading.title}
                 </h5>
-
+<div className="card-footer">
                 <div className="mt-auto">
                     <button
                         className="btn btn-primary w-100 rounded-3"
@@ -32,7 +32,7 @@ export const ReadingCardHomeTeacher = ({ reading }) => {
                     
                 </div>
 
-                <div className="mt-2">
+                <div className="mt-2 ">
                     <button
                         className="btn btn-warning w-100 rounded-3"
                         onClick={() => navigate(`/reading/edit/${reading.id}`)}
@@ -40,6 +40,7 @@ export const ReadingCardHomeTeacher = ({ reading }) => {
                         Editar lectura
                     </button>
                     
+                </div>
                 </div>
 
             </div>

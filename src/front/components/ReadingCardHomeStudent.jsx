@@ -22,7 +22,7 @@ export const ReadingCardHomeStudent = ({ reading }) => {
 					{reading.title}
 				</h5>
 
-				<div className="mt-auto">
+				<div className="mt-auto card-footer">
 					<button
 						className="btn btn-primary w-100 rounded-3"
 						onClick={() => navigate(`/reading/${reading.id}`)}

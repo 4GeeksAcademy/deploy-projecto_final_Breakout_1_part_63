@@ -20,10 +20,10 @@ export const CardsReadingsTeacher = ({
                             <h5 className="card-title mb-3">
                                 {reading.title}
                             </h5>
-
+<div className="card-footer">
                             <Link
                                 to={`/reading/teacher/${reading.id}`}
-                                className="btn btn-primary me-2 fs-5"
+                                className="btn btn-primary me-2 fs-5 "
                             >
                                 Ver lectura
                             </Link>
@@ -34,7 +34,7 @@ export const CardsReadingsTeacher = ({
                                 Editar lectura
                             </Link>
 
-
+</div>
                         </div>
                     </div>
                 </div>

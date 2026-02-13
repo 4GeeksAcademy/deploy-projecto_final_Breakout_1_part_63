@@ -21,14 +21,14 @@ export const CardsReadings = ({
                             <h5 className="card-title mb-3">
                                 {reading.title}
                             </h5>
-
+<div className="card-footer">
                             <Link
                                 to={`/reading/${reading.id}`}
-                                className="btn btn-primary fs-5 pe-4 ps-4"
+                                className="btn btn-primary fs-5 pe-4 ps-4 "
                             >
                                 Revisar lectura
                             </Link>
-
+</div>
                             
 
                         </div>

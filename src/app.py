@@ -613,6 +613,26 @@ def get_student_todos_home():
 
     return jsonify(todos_serialized), 200
 
+#HOME TEACHER TODO POR ID DE PROFESOR
+@app.route('/teacher/todos/home', methods=['GET'])
+@jwt_required()
+def get_teacher_todos_home():
+
+    #id del profesor desde el token
+    teacher_id = get_jwt_identity()
+
+    #traer lecturas creadas por ese profesor
+    todos = Todo.query.filter(
+        Todo.teacher_id == teacher_id
+    ).all()
+
+    todos_serialized = []
+    for todo in todos:
+        todos_serialized.append(todo.serialize())
+
+    return jsonify(todos_serialized), 200
+
+
 
 #                  ENDPOINT REGISTER
 
