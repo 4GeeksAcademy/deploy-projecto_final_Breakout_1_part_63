@@ -18,7 +18,7 @@ export const ReadingCardHomeStudent = ({ reading }) => {
 
 			<div className="card-body d-flex flex-column">
 
-				<h5 className="card-title fw-bold mb-3 text-truncate">
+				<h5 className="card-title fw-bold mb-3 text-center">
 					{reading.title}
 				</h5>
 

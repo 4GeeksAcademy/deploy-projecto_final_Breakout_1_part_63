@@ -3,6 +3,7 @@ import { TodoCard } from "../components/todoCard";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { ReadingCards } from "../components/ReadingCards";
 import { ReadingCardHomeStudent } from "../components/ReadingCardHomeStudent.jsx";
+import { Link } from "react-router-dom";
 
 export const HomeStudent = () => {
 	const { store, dispatch } = useGlobalReducer();
@@ -149,21 +150,37 @@ useEffect(() => {
 
 			
 
-		<div className="container mt-5">
-	<h2 className="fw-bold mb-4">Mis Lecturas <span className="fs-4 fw-lighter">(Vista Previa)</span></h2> 
-
-	{currentReadings.length === 0 && (
-		<p>No hay lecturas asignadas</p>
-	)}
-
-	<div className="row g-4">
-		{currentReadings.map(reading => (
+<div className="container mt-5">
+		<div className="row">
+		  <div className="col-6">
+		
+		<h2 className="fw-bold mb-4">Tus lecturas asignadas <span className="fs-4 fw-lighter">(Vista Previa)</span></h2> 
+		</div>
+<div className="col-6 text-end">
+		  
+<Link to="/readings/student">
+				<button className="btn btn-outline-dark fs-6 p-1 mt-1 me-2">
+				  Ver todas las lecturas →
+				</button>
+				 </Link>
+	 
+	  </div>
+	  
+	  </div>
+	 
+		{currentReadings.length === 0 && (
+		  <p>No hay lecturas creadas</p>
+		)}
+	  
+		<div className="row g-4">
+		  {currentReadings.map(reading => (
 			<div key={reading.id} className="col-md-6 col-lg-3">
-				<ReadingCardHomeStudent reading={reading} />
+			  <ReadingCardHomeStudent reading={reading} />
 			</div>
-		))}
-	</div>
-</div>
+		  ))}
+		</div>
+	   
+	  </div> 
 
 
 				

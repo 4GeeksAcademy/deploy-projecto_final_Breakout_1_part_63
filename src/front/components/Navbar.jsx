@@ -94,13 +94,13 @@ export const Navbar = () => {
           {isAuthenticated && role === "STUDENT" && (
             <>
               <Link to="/todoviewstudent">
-                <button className="btn btn-success ms-2">
+                <button className="btn btn-info ms-2">
                   Mis Tareas
                 </button>
               </Link>
 
               <Link to="/readings/student">
-                <button className="btn btn-success ms-2">
+                <button className="btn btn-info ms-2">
                   Mis Lecturas
                 </button>
   </Link>
