@@ -2,8 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 
 export const TeacherSubmissionsList = () => {
+
+
+  
   const { todoId } = useParams();
   const navigate = useNavigate();
+
   const [todo, setTodo] = useState(null);
   const [students, setStudents] = useState([]);
   const [submissions, setSubmissions] = useState([]);
@@ -36,17 +40,13 @@ export const TeacherSubmissionsList = () => {
       setCurrentPage(1);
 
       try {
-        if (!backendBase) {
-          throw new Error(
-            "VITE_BACKEND_URL no está definido ."
-          );
-        }
+        if (!backendBase) throw new Error("VITE_BACKEND_URL no está definido.");
+        if (!todoId) throw new Error("Falta todoId en la URL.");
 
-        if (!todoId) {
-          throw new Error("Falta todoId en la URL");
-        }
-
-        const todoResp = await fetch(`${backendBase}/todos/${todoId}`);
+       
+        const todoResp = await fetch(`${backendBase}/todos/${todoId}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
         const todoParsed = await safeReadJsonOrText(todoResp);
 
         if (!todoResp.ok) {
@@ -58,10 +58,9 @@ export const TeacherSubmissionsList = () => {
         const todoData = todoParsed.json;
         setTodo(todoData);
 
-        if (!todoData?.group_id) {
-          throw new Error("La tarea no tiene group_id .");
-        }
+        if (!todoData?.group_id) throw new Error("La tarea no tiene group_id.");
 
+       
         const studentsResp = await fetch(
           `${backendBase}/groups/${todoData.group_id}/students`,
           { headers: token ? { Authorization: `Bearer ${token}` } : {} }
@@ -81,6 +80,16 @@ export const TeacherSubmissionsList = () => {
           : [];
         setStudents(studentsData);
 
+        console.log("STUDENTS:", studentsData);
+        console.log("STUDENT KEYS:", studentsData.map(s => ({
+          id: s.id,
+          user_id: s.user_id,
+          email: s.email,
+          name: s.name
+        })));
+
+
+       
         const subResp = await fetch(`${backendBase}/submissions?todo_id=${todoId}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
@@ -99,11 +108,23 @@ export const TeacherSubmissionsList = () => {
           : [];
         setSubmissions(subs);
 
+        console.log("SUBMISSIONS:", subs);
+        console.log("SUBMISSION KEYS:", subs.map(x => ({
+          id: x.id,
+          student_id: x.student_id,
+          todo_id: x.todo_id,
+          response_url: x.response_url
+        })));
+
+
+     
         const statusMap = {};
         await Promise.all(
           subs.map(async (s) => {
             try {
-              const r = await fetch(`${backendBase}/submissions/${s.id}/status`);
+              const r = await fetch(`${backendBase}/submissions/${s.id}/status`, {
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+              });
               if (!r.ok) return;
               const st = await r.json().catch(() => null);
               if (st) statusMap[s.id] = st;
@@ -119,32 +140,43 @@ export const TeacherSubmissionsList = () => {
     load();
   }, [todoId, backendBase, token]);
 
-  const rows = useMemo(() => {
-    const subByStudentId = new Map();
-    for (const s of submissions) {
-      if (s?.student_id != null) subByStudentId.set(String(s.student_id), s);
-    }
 
-    return (students || []).map((st) => {
-      const stKey = String(st.user_id);
-      const sub = subByStudentId.get(stKey) || null;
-      const status = sub ? statusBySubmissionId[sub.id] : null;
+    const rows = useMemo(() => {
+      const subByStudentGroupId = new Map();
 
-      const state = status?.state
-        ? String(status.state).toUpperCase()
-        : sub
-        ? "ENTREGADO"
-        : "PENDIENTE";
+      for (const s of submissions) {
+        if (s?.student_id != null) {
+          subByStudentGroupId.set(String(s.student_id), s);
+        }
+      }
 
-      return {
-        user_id: st.user_id,
-        name: st.name,
-        email: st.email,
-        submission: sub,
-        state,
-      };
-    });
-  }, [students, submissions, statusBySubmissionId]);
+      return (students || []).map((st) => {
+        const stKey = String(st.student_group_id); 
+        const sub = subByStudentGroupId.get(stKey) || null;
+        const status = sub ? statusBySubmissionId[sub.id] : null;
+
+        const state = status?.state
+          ? String(status.state).toUpperCase()
+          : sub
+          ? "ENTREGADO"
+          : "PENDIENTE";
+
+        return {
+          user_id: st.user_id,
+          name: st.name,
+          email: st.email,
+          submission: sub,
+          state,
+        };
+      });
+    }, [students, submissions, statusBySubmissionId]);
+
+
+
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
+    if (currentPage > totalPages) setCurrentPage(1);
+  }, [rows, currentPage]);
 
   const totalPages = Math.max(1, Math.ceil(rows.length / perPage));
   const currentRows = useMemo(() => {
@@ -170,7 +202,7 @@ export const TeacherSubmissionsList = () => {
 
           return (
             <div
-              key={`${r.user_id}-${r.email}`}
+              key={String(r.student_group_id ?? r.user_id)} 
               className="list-group-item d-flex justify-content-between align-items-center"
             >
               <div className="me-3">
@@ -188,12 +220,12 @@ export const TeacherSubmissionsList = () => {
                     to={`/homeTeacher/todos/${todoId}/submissions/${r.submission.id}`}
                     className="btn btn-sm btn-primary"
                   >
-                    Corregir    
+                    Corregir
                   </Link>
                 ) : (
                   <button className="btn btn-sm btn-outline-secondary" disabled>
                     Sin entrega
-                  </button>  
+                  </button>
                 )}
               </div>
             </div>
@@ -215,13 +247,13 @@ export const TeacherSubmissionsList = () => {
         </div>
       )}
 
-       <button
-    type="button"
-    className="btn btn-sm btn-outline-secondary m-3"
-    onClick={() => navigate(-1)}
-  >
-    ← Volver
-  </button>
+      <button
+        type="button"
+        className="btn btn-sm btn-outline-secondary m-3"
+        onClick={() => navigate(-1)}
+      >
+        ← Volver
+      </button>
     </div>
   );
 };
