@@ -31,7 +31,7 @@ export const TodoCardHomeTeacher = ({ todo }) => {
                 <div className="mt-auto card-footer">
                     <button
                         className="btn btn-primary w-100 rounded-3"
-                        onClick={() => navigate(`/todos/${todo.id}`)}
+                        onClick={() => navigate(`/homeTeacher/todos/${todo.id}/submissions`)}
                     >
                         Ver tarea
                     </button>
