@@ -3,47 +3,90 @@ import { TodoCard } from "../components/todoCard";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { ReadingCards } from "../components/ReadingCards";
 import { ReadingCardHomeStudent } from "../components/ReadingCardHomeStudent.jsx";
+import { TodoCardHomeStudent } from "../components/TodoCardHomeStudent.jsx";
 import { Link } from "react-router-dom";
 
 export const HomeStudent = () => {
 	const { store, dispatch } = useGlobalReducer();
-	const todos = store.todos || [];
+	// const todos = store.todos || [];
 	 const [readings, setReadings] = useState([]);
+	 const [todos, setTodos] = useState([]);
 	 const [err, setErr] = useState(null);
+	 
 
 	 const currentReadings = [...readings]
   .sort((a, b) => b.id - a.id) // más reciente primero
   .slice(0, 4);
 
+  const currentTodos = [...todos]
+  .sort((a, b) => b.id - a.id) // más reciente primero
+  .slice(0, 4);
 
-	useEffect(() => {
-		const fetchTodos = async () => {
-			try {
-				const backend = import.meta.env.VITE_BACKEND_URL;
-				const resp = await fetch(`${backend}/todos`, {
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${localStorage.getItem("token")}`,
-					},
-				});
+//fetch viejo para todos 
+	// useEffect(() => {
+	// 	const fetchTodos = async () => {
+	// 		try {
+	// 			const backend = import.meta.env.VITE_BACKEND_URL;
+	// 			const resp = await fetch(`${backend}/todos`, {
+	// 				headers: {
+	// 					"Content-Type": "application/json",
+	// 					Authorization: `Bearer ${localStorage.getItem("token")}`,
+	// 				},
+	// 			});
 
-				const data = await resp.json();
+	// 			const data = await resp.json();
 
-				dispatch({
-					type: "SET_TODOS",
-					payload: data,
-				});
+	// 			dispatch({
+	// 				type: "SET_TODOS",
+	// 				payload: data,
+	// 			});
 
-			} catch (error) {
-				console.error("Error fetching tasks:", error);
-			}
-		};
+	// 		} catch (error) {
+	// 			console.error("Error fetching tasks:", error);
+	// 		}
+	// 	};
 
-		fetchTodos();
-	}, [dispatch]);
+	// 	fetchTodos();
+	// }, [dispatch]);
 
-	
+	//nuevo fetch para todo con id by vicente
 
+useEffect(() => {
+        getStudentTodos();
+    }, []);
+
+    const getStudentTodos = async () => {
+        setErr(null);
+
+        try {
+            const backend = import.meta.env.VITE_BACKEND_URL;
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                throw new Error("Usuario no autenticado");
+            }
+
+            const resp = await fetch(`${backend}/student/todos/home`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            const data = await resp.json().catch(() => ([]));
+
+            if (!resp.ok) {
+                throw new Error("Aún no tienes tareas asignadas");
+            }
+
+            setTodos(data);
+
+        } catch (error) {
+            setErr(error.message);
+        }
+    };
+
+
+// fetch readings con id by vicente
 useEffect(() => {
         getStudentReadings();
     }, []);
@@ -68,7 +111,7 @@ useEffect(() => {
             const data = await resp.json().catch(() => ([]));
 
             if (!resp.ok) {
-                throw new Error("Error al cargar lecturas");
+                throw new Error("Aún no tienes lecturas asignadas");
             }
 
             setReadings(data);
@@ -134,7 +177,7 @@ useEffect(() => {
 				</div>
 			</div>
 
-			<div className="container mt-5">
+			{/* <div className="container mt-5">
 				<h2 className="fw-bold mb-4">Mis Tareas</h2>
 
 				{todos.length === 0 && (
@@ -146,7 +189,40 @@ useEffect(() => {
 						<TodoCard key={todo.id} todo={todo} />
 					))}
 				</div>
+			</div> */}
+
+{/* cards todo nuevas */}
+<div className="container mt-5">
+		<div className="row">
+		  <div className="col-6">
+		
+		<h2 className="fw-bold mb-4">Tus tareas asignadas <span className="fs-4 fw-lighter">(Vista Previa)</span></h2> 
+		</div>
+<div className="col-6 text-end">
+		  
+<Link to="/todoviewstudent">
+				<button className="btn btn-outline-dark fs-6 p-1 mt-1 me-2">
+				  Ver todas las tareas →
+				</button>
+				 </Link>
+	 
+	  </div>
+	  
+	  </div>
+	 
+		{currentTodos.length === 0 && (
+		  <p>No hay tareas asignadas</p>
+		)}
+	  
+		<div className="row g-4">
+		  {currentTodos.map(todo => (
+			<div key={todo.id} className="col-md-6 col-lg-3">
+			  <TodoCardHomeStudent todo={todo} />
 			</div>
+		  ))}
+		</div>
+	   
+	  </div> 
 
 			
 

@@ -579,6 +579,41 @@ def get_teacher_readings():
     return jsonify(readings_serialized), 200
 
 
+#ENDPOINTS TODO PARA HOMES
+#HOME STUDENT TODO
+
+@app.route('/student/todos/home', methods=['GET'])
+@jwt_required()
+def get_student_todos_home():
+
+    # para id desde el token
+    student_id = get_jwt_identity()
+
+    # filtrar id en grupos
+    student_groups = Students_Group.query.filter(
+        Students_Group.user_id == student_id
+    ).all()
+
+    if not student_groups:
+        return jsonify("Usuario no encontrado"), 400
+
+    # los ids de grupos
+    group_ids = []
+    for sg in student_groups:
+        group_ids.append(sg.group_id)
+
+    #  lecturas de ids de grupos
+    todos = Todo.query.filter(
+        Todo.group_id.in_(group_ids)
+    ).all()
+
+    todos_serialized = []
+    for todo in todos:
+        todos_serialized.append(todo.serialize())
+
+    return jsonify(todos_serialized), 200
+
+
 #                  ENDPOINT REGISTER
 
 
