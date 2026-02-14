@@ -53,6 +53,13 @@ export const Navbar = () => {
           {isAuthenticated && role === "TEACHER" && (
             <>
 
+<Link to="/homeTeacher">
+                <button className="btn btn btn-info ms-2 ">
+                   <i class="fa-solid fa-house"></i> Página Principal
+                </button>
+              </Link>
+           
+
               <Link to="/crear-tarea">
                 <button className="btn btn-info ms-2">
                   Crear Tarea
@@ -77,6 +84,13 @@ export const Navbar = () => {
 
           {isAuthenticated && role === "ADMIN" && (
             <>
+           
+            <Link to="/homeAdmin">
+                <button className="btn btn btn-warning ms-2 ">
+                   <i class="fa-solid fa-house"></i> Página Principal
+                </button>
+              </Link>
+
               <Link to="/signup-staff">
                 <button className="btn btn-warning ms-2">
                   Crear Staff
@@ -93,6 +107,13 @@ export const Navbar = () => {
 
           {isAuthenticated && role === "STUDENT" && (
             <>
+
+            <Link to="/homeStudent">
+                <button className="btn btn btn-info ms-2 ">
+                   <i class="fa-solid fa-house"></i> Página Principal
+                </button>
+              </Link>
+
               <Link to="/todoviewstudent">
                 <button className="btn btn-info ms-2">
                   Mis Tareas
