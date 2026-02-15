@@ -76,7 +76,8 @@ export const TodoViewStudent = () => {
 
         <div className="container mt-5">
 
-            <h1 className="mb-4">Tus tareas, Vicente</h1>
+            <h1 className="mb-4">  Tus tareas,  <span className="text-primary">{store.user?.name || "Estudiante"}</span>
+                            </h1>
 
             {err && <div className="alert alert-danger">{err}</div>}
 
