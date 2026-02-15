@@ -314,6 +314,24 @@ def get_reading(reading_id):
 
     return jsonify(reading.serialize()), 200
 
+#mostrar tarea del profesor por id profesor
+
+@app.route('/todo/<int:todo_id>', methods=['GET'])
+@jwt_required()
+def get_todo_id(todo_id):
+
+    todo = Todo.query.get(todo_id)
+
+    if not todo:
+        return jsonify({'msg': 'Tarea no encontrada'}), 404
+
+    current_user_id = int(get_jwt_identity())
+
+    if todo.teacher_id != current_user_id:
+        return jsonify({'msg': 'No autorizado'}), 403
+
+    return jsonify(todo.serialize()), 200
+
 
 # CREAR LECTURA NUEVO
 
@@ -447,6 +465,27 @@ def edit_reading(id):
 
     return jsonify({"msg": "Reading updated"}), 200
 
+#editar todo by vicenteagt
+
+@app.route('/edittodo/<int:id>', methods=['PUT'])
+@jwt_required()
+def edit_todo(id):
+
+    todo = Todo.query.get(id)
+    if not todo:
+        return jsonify({"msg": "Todo not found"}), 404
+
+    data = request.get_json()
+
+    todo.title = data.get("title", todo.title)
+    todo.description = data.get("description", todo.description)
+    todo.group_id = data.get("group_id", todo.group_id)
+
+    todo.archive_url = data.get("archive_url")
+
+    db.session.commit()
+
+    return jsonify({"msg": "Todo updated"}), 200
 
 #                   ENDPOINT PARA TRAER PROFESORES
 
@@ -522,7 +561,26 @@ def delete_reading(reading_id):
 
     return jsonify({'msg': f'Lectura "{reading.title}" eliminada correctamente'}), 200
 
+#ELIMINAR TAREA POR ID PROFESOR
 
+@app.route('/deletetodo/<int:todo_id>', methods=['DELETE'])
+@jwt_required()
+def delete_todo_nuevo(todo_id):
+
+    todo = Todo.query.get(todo_id)
+
+    if not todo:
+        return jsonify({'msg': 'Tarea no encontrada'}), 404
+
+    current_user_id = int(get_jwt_identity())
+
+    if todo.teacher_id != current_user_id:
+        return jsonify({'msg': 'No autorizado'}), 403
+
+    db.session.delete(todo)
+    db.session.commit()
+
+    return jsonify({'msg': f'Tarea "{todo.title}" eliminada correctamente'}), 200
 # ENDPOINT READINGS BUSCAR LECTURA POR USER ID EN GRUPO PARA ESTUDIANTE
 
 

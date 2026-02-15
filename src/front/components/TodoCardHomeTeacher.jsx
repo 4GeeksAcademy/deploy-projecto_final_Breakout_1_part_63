@@ -33,7 +33,7 @@ export const TodoCardHomeTeacher = ({ todo }) => {
                         className="btn btn-primary w-100 rounded-3"
                         onClick={() => navigate(`/homeTeacher/todos/${todo.id}/submissions`)}
                     >
-                        Ver tarea
+                        Ver entregas
                     </button>
                 </div>
 

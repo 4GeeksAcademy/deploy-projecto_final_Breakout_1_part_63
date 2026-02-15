@@ -66,6 +66,12 @@ export const Navbar = () => {
                 </button>
               </Link>
             
+            <Link to="/homeTeacher/todos">
+                <button className="btn btn-info ms-2">
+                  Tareas creadas
+                </button>
+              </Link>
+            
 
             <Link to="/readings-create">
                 <button className="btn btn-info ms-2">

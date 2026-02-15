@@ -34,6 +34,8 @@ import { ResetPassword } from "./pages/ResetPassword.jsx";
 import { TodoViewTeacher } from "./pages/TodoViewTeacher.jsx";
 import { TeacherSubmissionsList } from "./pages/TeacherSubmissionsList.jsx";
 import { TeacherSubmissionReview } from "./pages/TeacherSubmissionReview.jsx";
+import { EditTodoTeacher } from "./pages/EditTodoTeacher.jsx";
+
 
 
 
@@ -63,6 +65,7 @@ export const router = createBrowserRouter(
       <Route path="/reading/:id" element={<IndividualReadingViewStudent />} />
       <Route path="/reading/teacher/:id" element={<IndividualReadingViewTeacher />} />
       <Route path="/reading/edit/:id" element={<EditReadingTeacher />} />
+      <Route path="/todo/edit/:id" element={<EditTodoTeacher />} />
 
       <Route path="/teacher/readings" element={<TeacherViewReadings />} />
       <Route path="/todos/:id" element={<IndividualTodoViewStudent />} />

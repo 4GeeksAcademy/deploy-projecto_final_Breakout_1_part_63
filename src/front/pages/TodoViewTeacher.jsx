@@ -1,37 +1,38 @@
 import { useState, useEffect } from "react";
+import { CardsTodoViewTeacher } from "../components/CardsTodoViewTeacher.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
-import { RandomImgTarea } from "../components/RandomImgTarea";
-
-
-
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const TodoViewTeacher = () => {
-
-    const { store, dispatch } = useGlobalReducer();
-    const navigate = useNavigate();
+     const navigate = useNavigate();
+       const { store, dispatch } = useGlobalReducer();
+    const [todos, setTodos] = useState([]);
     const [err, setErr] = useState(null);
-    const [statusMap, setStatusMap] = useState({});
-
+    
 
     const [currentPage, setCurrentPage] = useState(1);
-
-
     const todosPerPage = 6;
 
     useEffect(() => {
-        getTodos();
+        getTeacherTodos();
     }, []);
 
-    const getTodos = async () => {
-
+    const getTeacherTodos = async () => {
         setErr(null);
 
         try {
-
             const backend = import.meta.env.VITE_BACKEND_URL;
+            const token = localStorage.getItem("token");
 
-            const resp = await fetch(`${backend}/todos`);
+            if (!token) {
+                throw new Error("Usuario no autenticado");
+            }
+
+            const resp = await fetch(`${backend}/teacher/todos/home`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
 
             const data = await resp.json().catch(() => ([]));
 
@@ -39,10 +40,7 @@ export const TodoViewTeacher = () => {
                 throw new Error("Error al cargar tareas");
             }
 
-            dispatch({
-                type: "GET_TODOS_SUCCESS",
-                payload: data
-            });
+            setTodos(data);
 
         } catch (error) {
             setErr(error.message);
@@ -56,98 +54,96 @@ export const TodoViewTeacher = () => {
         }));
     };
 
+     useEffect(() => {
+            const fetchMe = async () => {
+                try {
+                    const backend = import.meta.env.VITE_BACKEND_URL;
+                    const resp = await fetch(`${backend}/me`, {
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                    });
     
+                    if (!resp.ok) throw new Error("Error obteniendo usuario");
+    
+                    const data = await resp.json();
+    
+                    dispatch({
+                        type: "SET_CURRENT_USER",
+                        payload: data,
+                    });
+                } catch (error) {
+                    console.error("Error fetching current user:", error);
+                }
+            };
+    
+            fetchMe();
+        }, [dispatch]);
+
+    //logica paginación 
 
     const indexOfLast = currentPage * todosPerPage;
     const indexOfFirst = indexOfLast - todosPerPage;
 
-
-    const sortedTodos = [...(store.todos || [])].sort(
+    const sortedTodos = [...todos].sort(
         (a, b) => b.id - a.id
     );
 
+    const currentTodos = sortedTodos.slice(
+        indexOfFirst,
+        indexOfLast
+    );
 
-    const currentTodos = sortedTodos.slice(indexOfFirst, indexOfLast);
+    const totalPages = Math.ceil(
+        sortedTodos.length / todosPerPage
+    );
 
-    const totalPages = Math.ceil(sortedTodos.length / todosPerPage);
-
-
+   
 
     return (
-
         <div className="container mt-5">
 
-            <h1 className="mb-4">Tus tareas para revisión</h1>
+            <div className="m-0 p-0">
+                            <img
+                                src= "https://res.cloudinary.com/dxvdismgz/raw/upload/v1771106272/Screenshot_2026-02-14_at_3.54.56_p.m._zxz1ju.png"
+                                className="img-fluid w-100 rounded p-0"
+                                alt="cover"
+                                style={{ maxHeight: "250px", objectFit: "cover" }}
+                            />
+                        </div>
+             
+
+            <h2 className="display-5 fw-bold mb-2 mt-2 ">
+                                Tus tareas creadas,  <span className="text-primary">{store.user?.name || "Profesor"}</span>
+                            </h2>
+
+                            <Link to="/homeTeacher">
+                                <button className="btn btn-outline-dark fs-6 p-1 mb-3">
+                                    ←   Volver a Página Principal
+                                </button>
+                            </Link>
 
             {err && <div className="alert alert-danger">{err}</div>}
 
-            <div className="row">
-
-                {currentTodos?.map((todo) => (
-
-                    <div className="col-md-4 mb-4" key={todo.id}>
-
-                        <div className="card h-100 shadow">
-
-                            <RandomImgTarea
-                                seed={todo.id}
-                                className="card-img-top"
-                                alt="tarea"
-
-                            />
-
-                            <div className="card-body d-flex flex-column w-100">
-
-                                <h5 className="card-title">
-                                    {todo.title}
-                                </h5>
-
-                                <Link
-                                    to={`/homeTeacher/todos/${todo.id}/submissions`}
-                                    className="btn btn-primary me-2 flex-shrink-0 d-inline-flex justify-content-center"
-                                    style={{ width: "140px" }}
-                                >
-                                    Calificar
-                                </Link>
-
-
-                                {/*       <button
-                                    className={`btn ${statusMap[todo.id] ? "btn-success" : "btn-outline-secondary"}`}
-                                    onClick={() => toggleStatus(todo.id)}
-                                >
-                                    {statusMap[todo.id] ? "Completada" : "Pendiente"}
-                                </button>*/}
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                ))}
-
-            </div>
-<button
-        type="button"
-        className="btn btn-sm btn-outline-secondary mb-3"
-        onClick={() => navigate(-1)}
-      >
-        ← Volver
-      </button>
-
+            <CardsTodoViewTeacher
+                todos={currentTodos}
+            />
+     
             <div className="d-flex justify-content-center mt-3 mb-3">
-
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                     <button
                         key={page}
-                        className={`btn me-2 ${page === currentPage ? "btn-dark" : "btn-outline-dark"}`}
+                        className={`btn me-2 ${
+                            page === currentPage
+                                ? "btn-dark"
+                                : "btn-outline-dark"
+                        }`}
                         onClick={() => setCurrentPage(page)}
                     >
                         {page}
                     </button>
-
                 ))}
-
             </div>
 
         </div>
