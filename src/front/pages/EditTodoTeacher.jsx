@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import UploadFiles from "../components/UploadFiles.jsx";
 
-export const EditReadingTeacher = () => {
-
+export const EditTodoTeacher = () => {
     const backend = import.meta.env.VITE_BACKEND_URL;
     const navigate = useNavigate();
     const { id } = useParams();
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const [dueDate, setDueDate] = useState("");
     const [groupId, setGroupId] = useState("");
     const [archiveUrl, setArchiveUrl] = useState("");
 
@@ -19,9 +19,7 @@ export const EditReadingTeacher = () => {
     const [okMsg, setOkMsg] = useState(null);
     const [uploading, setUploading] = useState(false);
 
-    // 🔥 Modal states
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [deleting, setDeleting] = useState(false);
 
     const token = localStorage.getItem("token");
 
@@ -35,32 +33,22 @@ export const EditReadingTeacher = () => {
         return url.split("/").pop();
     };
 
+
     useEffect(() => {
-
-        if (!token) {
-            setErrorMsg("No autenticado");
-            setLoading(false);
-            return;
-        }
-
-        const fetchReading = async () => {
+        const fetchTodo = async () => {
             try {
-                const resp = await fetch(`${backend}/reading/${id}`, {
-                    method: "GET",
+                const resp = await fetch(`${backend}/todos/${id}`, {
                     headers: authHeaders
                 });
 
-                if (resp.status === 401) {
-                    throw new Error("Sesión expirada");
-                }
-
                 const data = await resp.json();
-                if (!resp.ok) throw new Error(data?.msg || "Error cargando lectura");
+                if (!resp.ok) throw new Error(data?.msg || "Error cargando tarea");
 
-                setTitle(data.title);
-                setDescription(data.content);
-                setGroupId(String(data.group_id));
-                setArchiveUrl(data.reading_url || "");
+                setTitle(data.title || "");
+                setDescription(data.description || "");
+                setDueDate(data.due_date || "");
+                setGroupId(String(data.group_id || ""));
+                setArchiveUrl(data.archive_url || "");
 
             } catch (error) {
                 setErrorMsg(error.message);
@@ -69,42 +57,39 @@ export const EditReadingTeacher = () => {
             }
         };
 
-        fetchReading();
+        fetchTodo();
+    }, [backend, id]);
 
-    }, [backend, id, token]);
 
     useEffect(() => {
-
-        if (!token) return;
-
-        const loadGroups = async () => {
+        const fetchGroups = async () => {
             try {
                 const resp = await fetch(`${backend}/groups`, {
                     headers: authHeaders
                 });
 
-                if (resp.status === 401) {
-                    throw new Error("Sesión expirada");
-                }
-
                 const data = await resp.json();
                 if (!resp.ok) throw new Error("Error cargando grupos");
 
                 setGroups(data);
-
             } catch (error) {
                 console.error(error);
             }
         };
 
-        loadGroups();
+        fetchGroups();
+    }, []);
 
-    }, [backend, token]);
-
+ 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorMsg(null);
         setOkMsg(null);
+
+        if (!dueDate) {
+            setErrorMsg("La fecha es obligatoria");
+            return;
+        }
 
         if (uploading) {
             setErrorMsg("Espera a que termine la subida del archivo");
@@ -114,28 +99,25 @@ export const EditReadingTeacher = () => {
         try {
             const payload = {
                 title,
-                content: description,
-                group_id: Number(groupId),
-                reading_url: archiveUrl || null
+                description,
+                due_date: dueDate,
+                archive_url: archiveUrl || null,
+                group_id: Number(groupId)
             };
 
-            const resp = await fetch(`${backend}/editreading/${id}`, {
+            const resp = await fetch(`${backend}/todos/${id}`, {
                 method: "PUT",
                 headers: authHeaders,
                 body: JSON.stringify(payload)
             });
 
-            if (resp.status === 401) {
-                throw new Error("Sesión expirada");
-            }
-
             const data = await resp.json();
-            if (!resp.ok) throw new Error(data?.msg || "Error actualizando");
+            if (!resp.ok) throw new Error(data?.msg || "Error actualizando tarea");
 
-            setOkMsg("Lectura actualizada correctamente");
+            setOkMsg("Tarea actualizada correctamente");
 
             setTimeout(() => {
-                navigate("/teacher/readings");
+                navigate("/teacher/todos");
             }, 1200);
 
         } catch (error) {
@@ -143,31 +125,26 @@ export const EditReadingTeacher = () => {
         }
     };
 
+    // 🔹 Eliminar tarea
     const handleDelete = async () => {
-
-        setDeleting(true);
-
         try {
-            const resp = await fetch(`${backend}/deletereading/${id}`, {
+            const resp = await fetch(`${backend}/todos/${id}`, {
                 method: "DELETE",
                 headers: authHeaders
             });
 
-            if (resp.status === 401) {
-                throw new Error("Sesión expirada");
-            }
-
             const data = await resp.json();
-            if (!resp.ok) {
-                throw new Error(data?.msg || "Error eliminando lectura");
-            }
+            if (!resp.ok) throw new Error(data?.msg || "Error eliminando tarea");
 
-            navigate("/teacher/readings");
+            setShowDeleteModal(false);
+            setOkMsg("Tarea eliminada correctamente");
+
+            setTimeout(() => {
+                navigate("/teacher/todos");
+            }, 1200);
 
         } catch (error) {
             setErrorMsg(error.message);
-            setDeleting(false);
-            setShowDeleteModal(false);
         }
     };
 
@@ -175,10 +152,8 @@ export const EditReadingTeacher = () => {
         return (
             <div className="page-teacher-todos d-flex justify-content-center align-items-center">
                 <div className="text-center">
-                    <div className="spinner-border mb-3 g-color" role="status">
-                        <span className="visually-hidden">Cargando...</span>
-                    </div>
-                    <p className="sidebar-title">Cargando lectura...</p>
+                    <div className="spinner-border mb-3 g-color" role="status"></div>
+                    <p className="sidebar-title">Cargando tarea...</p>
                 </div>
             </div>
         );
@@ -191,10 +166,11 @@ export const EditReadingTeacher = () => {
                     <div className="col-12 d-flex justify-content-center">
                         <div className="w-100 px-4" style={{ maxWidth: "900px" }}>
 
+    
                             <div className="main-header mb-4">
                                 <div className="main-header-inner main-header-inner--todo d-flex align-items-center gap-3">
                                     <Link
-                                        to="/teacher/readings"
+                                        to="/teacher/todos"
                                         className="btn btn-light rounded-circle shadow-sm"
                                     >
                                         <i className="bi bi-arrow-left"></i>
@@ -202,10 +178,10 @@ export const EditReadingTeacher = () => {
 
                                     <div>
                                         <h2 className="header-title mb-0">
-                                            ✏️ Editar lectura
+                                            ✏️ Editar tarea
                                         </h2>
                                         <p className="header-subtitle mb-0">
-                                            Modifica los detalles de la lectura existente
+                                            Modifica los detalles de la tarea existente
                                         </p>
                                     </div>
                                 </div>
@@ -215,25 +191,13 @@ export const EditReadingTeacher = () => {
 
                                 {errorMsg && (
                                     <div className="alert tile-pink d-flex align-items-center gap-2 mb-4">
-                                        <i className="bi bi-exclamation-triangle-fill v-color"></i>
                                         {errorMsg}
-                                        <button
-                                            type="button"
-                                            className="btn-close ms-auto"
-                                            onClick={() => setErrorMsg(null)}
-                                        ></button>
                                     </div>
                                 )}
 
                                 {okMsg && (
                                     <div className="alert tile-teal text-white d-flex align-items-center gap-2 mb-4">
-                                        <i className="bi bi-check-circle-fill"></i>
                                         {okMsg}
-                                        <button
-                                            type="button"
-                                            className="btn-close btn-close-white ms-auto"
-                                            onClick={() => setOkMsg(null)}
-                                        ></button>
                                     </div>
                                 )}
 
@@ -242,12 +206,10 @@ export const EditReadingTeacher = () => {
                                         <form onSubmit={handleSubmit}>
 
                                             <div className="mb-4">
-                                                <label className="ctf-label form-label">
-                                                    Título de la lectura
-                                                </label>
+                                                <label className="ctf-label form-label">Título</label>
                                                 <input
                                                     type="text"
-                                                    className="form-control form-control-lg"
+                                                    className="form-control form-control-lg ctf-input"
                                                     value={title}
                                                     onChange={(e) => setTitle(e.target.value)}
                                                     required
@@ -255,11 +217,9 @@ export const EditReadingTeacher = () => {
                                             </div>
 
                                             <div className="mb-4">
-                                                <label className="ctf-label form-label">
-                                                    Grupo asignado
-                                                </label>
+                                                <label className="ctf-label form-label">Grupo</label>
                                                 <select
-                                                    className="form-select form-select-lg"
+                                                    className="form-select form-select-lg ctf-select"
                                                     value={groupId}
                                                     onChange={(e) => setGroupId(e.target.value)}
                                                     required
@@ -267,18 +227,27 @@ export const EditReadingTeacher = () => {
                                                     <option value="">Seleccionar grupo...</option>
                                                     {groups.map(g => (
                                                         <option key={g.id} value={g.id}>
-                                                            👥 {g.name}
+                                                             {g.name}
                                                         </option>
                                                     ))}
                                                 </select>
                                             </div>
 
                                             <div className="mb-4">
-                                                <label className="ctf-label form-label">
-                                                    Descripción
-                                                </label>
+                                                <label className="ctf-label form-label">Fecha límite</label>
+                                                <input
+                                                    type="date"
+                                                    className="form-control ctf-input"
+                                                    value={dueDate}
+                                                    onChange={(e) => setDueDate(e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+
+                                            <div className="mb-4">
+                                                <label className="ctf-label form-label">Descripción</label>
                                                 <textarea
-                                                    className="form-control"
+                                                    className="form-control ctf-textarea"
                                                     rows={6}
                                                     value={description}
                                                     onChange={(e) => setDescription(e.target.value)}
@@ -286,17 +255,11 @@ export const EditReadingTeacher = () => {
                                             </div>
 
                                             <div className="mb-5">
-                                                <label className="ctf-label form-label">
-                                                    Archivo adjunto
-                                                </label>
+                                                <label className="ctf-label form-label">Archivo adjunto</label>
 
                                                 {archiveUrl ? (
                                                     <div className="p-3 border rounded">
-                                                        <a
-                                                            href={archiveUrl}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
+                                                        <a href={archiveUrl} target="_blank" rel="noopener noreferrer">
                                                             {getFileName(archiveUrl)}
                                                         </a>
                                                         <div className="mt-2">
@@ -317,18 +280,18 @@ export const EditReadingTeacher = () => {
                                                 )}
                                             </div>
 
-                                            <div className="d-flex justify-content-between">
+                                            <div className="d-flex justify-content-between align-items-center">
                                                 <button
                                                     type="button"
-                                                    className="btn btn-danger"
+                                                    className="btn btn-outline-danger"
                                                     onClick={() => setShowDeleteModal(true)}
                                                 >
-                                                    Eliminar
+                                                    🗑 Eliminar tarea
                                                 </button>
 
                                                 <button
                                                     type="submit"
-                                                    className="btn btn-success"
+                                                    className="btn ctf-btn-primary"
                                                     disabled={uploading}
                                                 >
                                                     Guardar cambios
@@ -345,7 +308,7 @@ export const EditReadingTeacher = () => {
                 </div>
             </div>
 
-
+        
             {showDeleteModal && (
                 <>
                     <div className="modal fade show d-block" tabIndex="-1">
@@ -364,7 +327,7 @@ export const EditReadingTeacher = () => {
                                 </div>
 
                                 <div className="modal-body">
-                                    <p>¿Seguro que deseas eliminar esta lectura?</p>
+                                    <p>¿Seguro que deseas eliminar esta tarea?</p>
                                     <p className="text-muted small">
                                         Esta acción no se puede deshacer.
                                     </p>

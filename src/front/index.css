@@ -14,6 +14,10 @@
   color: #00cbb8;
 }
 
+.bg-v-color{
+  background-color: #00cbb8;
+}
+
 :root {
   --c-navy: #252641;
   --c-teal: #49bbbd;

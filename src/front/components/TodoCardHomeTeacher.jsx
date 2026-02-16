@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { RandomImgTarea } from "./RandomImgTarea";
+import { Link } from "react-router-dom";
 
 export const TodoCardHomeTeacher = ({ todo }) => {
 
@@ -33,7 +34,15 @@ export const TodoCardHomeTeacher = ({ todo }) => {
                         className="btn btn-primary w-100 rounded-3"
                         onClick={() => navigate(`/homeTeacher/todos/${todo.id}/submissions`)}
                     >
-                        Ver tarea
+                        Ver Entregas
+                    </button>
+                </div>
+                <div className="mt-auto card-footer">
+                    <button
+                        className="btn btn-warning w-100 rounded-3"
+                        onClick={() => navigate(`/EditTodoTeacher/${todo.id}`)}
+                    >
+                        Editar Tarea
                     </button>
                 </div>
 
