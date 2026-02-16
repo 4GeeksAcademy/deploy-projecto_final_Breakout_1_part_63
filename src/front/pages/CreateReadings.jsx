@@ -28,7 +28,7 @@ export const CreateReadings = () => {
   const teacherId = jwtPayload?.sub || jwtPayload?.identity || null;
 
   const [title, setTitle] = useState("");
-  // const [dueDate, setDueDate] = useState("");
+ 
   const [groupId, setGroupId] = useState("");
   const [description, setDescription] = useState("");
   const [archiveUrl, setArchiveUrl] = useState(null);
@@ -148,7 +148,7 @@ export const CreateReadings = () => {
     const payload = {
       title: title.trim(),
       description: description?.trim() || "",
-      //due_date: formatForBackendISO(dueDate),
+      
       group_id: Number(groupId),
       archive_url: archiveUrl || null,
     };

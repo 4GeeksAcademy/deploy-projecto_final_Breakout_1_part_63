@@ -363,6 +363,74 @@ def create_reading_automatic():
 
         db.session.add(new_reading)
         db.session.commit()
+ 
+         
+
+
+        for sg in group.students:
+
+            student = sg.user
+
+            if student.role != "STUDENT":
+                continue
+            
+            send_email(
+                student.email,
+                "Nueva lectura asignada - ACADEMICA",
+                f"""
+                <div style="font-family: Arial, sans-serif; background:#f4f6fb; padding:20px;">
+                <div style="max-width:600px; margin:auto; background:white; border-radius:14px; overflow:hidden; box-shadow:0 10px 22px rgba(0,0,0,0.08);">
+
+                    <div style="background:#5B72EE; padding:18px 20px; text-align:center;">
+                    <img src="https://res.cloudinary.com/dxvdismgz/raw/upload/v1771243499/logofinal_1_hdpo88.png"
+                        alt="ACADEMICA"
+                        style="max-width:170px; height:auto; display:inline-block;" />
+                    </div>
+
+                    <div style="padding:24px 24px 10px;">
+                    <h2 style="color:#252641; margin:0 0 10px; font-size:20px;">
+                        Nueva lectura asignada 📚
+                    </h2>
+
+                    <p style="color:#444; margin:0 0 14px; line-height:1.5;">
+                        Hola <strong>{student.name}</strong>, se te asignó una nueva lectura en <strong>ACADEMICA</strong>.
+                    </p>
+
+                    <div style="background:#eef6ff; border:1px solid rgba(37,38,65,0.10); padding:14px 14px; border-radius:12px; margin:12px 0;">
+                        <p style="margin:0; color:#252641; line-height:1.7;">
+                        <strong>Lectura:</strong> {new_reading.title}<br/>
+                        <strong>Profesor:</strong> {new_reading.teacher.name}<br/>
+                        <strong>Instrucciones:</strong> {new_reading.content}
+                        </p>
+                    </div>
+
+                    <p style="color:#444; margin:12px 0 0; line-height:1.5;">
+                        Ingresá a la plataforma para ver los detalles de la lectura.
+                    </p>
+
+                    <div style="margin-top:16px;">
+                        <a href="https://opulent-space-engine-x55q4wvgpxgqcvq97-3000.app.github.dev/"
+                        style="display:inline-block; background:#49bbbd; color:white; padding:12px 16px; border-radius:10px; text-decoration:none; font-weight:700;">
+                        Ir a ACADEMICA
+                        </a>
+                    </div>
+                    </div>
+
+                    <div style="padding:14px 24px 22px;">
+                    <hr style="border:none; border-top:1px solid rgba(37,38,65,0.10); margin:16px 0;" />
+                    <p style="margin:0; color:#666; font-size:13px; line-height:1.5;">
+                        Saludos,<br/>
+                        <strong>ACADEMICA</strong>
+                    </p>
+                    </div>
+
+                </div>
+                </div>
+                """
+            )
+           
+
+        
 
         return jsonify({
             "msg": "Lectura automática creada exitosamente",
@@ -1995,7 +2063,76 @@ def create_todo_with_google_event():
             db.session.add(new_todo)
             created_todos.append(new_todo)
 
-        db.session.commit()
+            db.session.commit()
+
+            for sg in group.students:
+
+                student = sg.user
+
+                if student.role != "STUDENT":
+                    continue
+                
+                send_email(
+                    student.email,
+                    "Nueva tarea asignada - ACADEMICA",
+                    f"""
+                    <div style="font-family: Arial, sans-serif; background:#f4f6fb; padding:20px;">
+                    <div style="max-width:600px; margin:auto; background:white; border-radius:14px; overflow:hidden; box-shadow:0 10px 22px rgba(0,0,0,0.08);">
+
+                        <div style="background:#5B72EE; padding:18px 20px; text-align:center;">
+                        <img src="https://res.cloudinary.com/dxvdismgz/raw/upload/v1771243499/logofinal_1_hdpo88.png"
+                            alt="ACADEMICA"
+                            style="max-width:170px; height:auto; display:inline-block;" />
+                        </div>
+
+                        <div style="padding:24px 24px 10px;">
+                        <h2 style="color:#252641; margin:0 0 10px; font-size:20px;">
+                            Nueva tarea asignada 📚
+                        </h2>
+
+                        <p style="color:#444; margin:0 0 14px; line-height:1.5;">
+                            Hola <strong>{student.name}</strong>, se te asignó una nueva tarea en <strong>ACADEMICA</strong>.
+                        </p>
+
+                        <div style="background:#eef6ff; border:1px solid rgba(37,38,65,0.10); padding:14px 14px; border-radius:12px; margin:12px 0;">
+                            <p style="margin:0; color:#252641; line-height:1.7;">
+                            <strong>Lectura:</strong> {new_todo.title}<br/>
+                            <strong>Profesor:</strong> {new_todo.teacher.name}<br/>
+                            <strong>Fecha de entrega:</strong> {new_todo.due_date}<br/>
+                            <strong>Instrucciones:</strong> {new_todo.description}
+                            </p>
+                        </div>
+
+                        <p style="color:#444; margin:12px 0 0; line-height:1.5;">
+                            Ingresá a la plataforma para ver los detalles de la tarea y hacer su entrega.
+                        </p>
+
+                        <div style="margin-top:16px;">
+                            <a href="https://opulent-space-engine-x55q4wvgpxgqcvq97-3000.app.github.dev/"
+                            style="display:inline-block; background:#49bbbd; color:white; padding:12px 16px; border-radius:10px; text-decoration:none; font-weight:700;">
+                            Ir a ACADEMICA
+                            </a>
+                        </div>
+                        </div>
+
+                        <div style="padding:14px 24px 22px;">
+                        <hr style="border:none; border-top:1px solid rgba(37,38,65,0.10); margin:16px 0;" />
+                        <p style="margin:0; color:#666; font-size:13px; line-height:1.5;">
+                            Saludos,<br/>
+                            <strong>ACADEMICA</strong>
+                        </p>
+                        </div>
+
+                    </div>
+                    </div>
+                    """
+                )
+
+
+        
+
+       
+
 
         return jsonify({
             "msg": "Tarea creada (1 por alumno) + evento creado en Google Calendar",
