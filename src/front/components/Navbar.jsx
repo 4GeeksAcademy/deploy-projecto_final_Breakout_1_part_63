@@ -53,36 +53,38 @@ export const Navbar = () => {
           {isAuthenticated && role === "TEACHER" && (
             <>
 
-<Link to="/homeTeacher">
-                <button className="btn btn btn-info ms-2 ">
+<Link to="/homeTeacher" className="text-dark text-decoration-none m-0 navbaritems">
+                
                    <i class="fa-solid fa-house"></i> Página Principal
-                </button>
+               
               </Link>
            
 
-              <Link to="/crear-tarea">
-                <button className="btn btn-info ms-2">
+              <Link to="/crear-tarea" className="text-dark ms-4 text-decoration-none navbaritems">
+                
                   Crear Tarea
-                </button>
+                
               </Link>
             
-            <Link to="/homeTeacher/todos">
-                <button className="btn btn-info ms-2">
-                  Tareas creadas
-                </button>
+            <Link to="/homeTeacher/todos" className="text-dark ms-4  text-decoration-none navbaritems">
+              
+                  Tareas Creadas
+                  
+                  
+               
               </Link>
             
 
-            <Link to="/readings-create">
-                <button className="btn btn-info ms-2">
+            <Link to="/readings-create" className="text-dark ms-4 text-decoration-none navbaritems">
+                
                   Crear Lectura
-                </button>
+               
               </Link>
 
-              <Link to="/teacher/readings">
-                <button className="btn btn-info ms-2">
+              <Link to="/teacher/readings" className="text-dark ms-4 text-decoration-none navbaritems me-1">
+                
                   Lecturas Creadas
-                </button>
+                
                  </Link>
 
               
@@ -93,22 +95,22 @@ export const Navbar = () => {
           {isAuthenticated && role === "ADMIN" && (
             <>
            
-            <Link to="/homeAdmin">
-                <button className="btn btn btn-warning ms-2 ">
+            <Link to="/homeAdmin" className="text-dark text-decoration-none m-0 navbaritems">
+                
                    <i class="fa-solid fa-house"></i> Página Principal
-                </button>
+                
               </Link>
 
-              <Link to="/signup-staff">
-                <button className="btn btn-warning ms-2">
+              <Link to="/signup-staff" className="text-dark ms-4 text-decoration-none navbaritems">
+                
                   Crear Staff
-                </button>
+               
               </Link>
 
-              <Link to="/admin/groups">
-                <button className="btn btn-warning ms-2">
+              <Link to="/admin/groups" className="text-dark ms-4 text-decoration-none navbaritems me-1">
+                
                   Crear Grupos
-                </button>
+               
               </Link>
             </>
           )}
@@ -116,22 +118,22 @@ export const Navbar = () => {
           {isAuthenticated && role === "STUDENT" && (
             <>
 
-            <Link to="/homeStudent">
-                <button className="btn btn btn-info ms-2 ">
+            <Link to="/homeStudent" className="text-dark text-decoration-none m-0 navbaritems">
+                
                    <i class="fa-solid fa-house"></i> Página Principal
-                </button>
+                
               </Link>
 
-              <Link to="/todoviewstudent">
-                <button className="btn btn-info ms-2">
+              <Link to="/todoviewstudent" className="text-dark ms-4 text-decoration-none navbaritems">
+               
                   Mis Tareas
-                </button>
+              
               </Link>
 
-              <Link to="/readings/student">
-                <button className="btn btn-info ms-2">
+              <Link to="/readings/student"  className="text-dark ms-4 text-decoration-none navbaritems me-1">
+                
                   Mis Lecturas
-                </button>
+                
   </Link>
 
                 
@@ -144,9 +146,9 @@ export const Navbar = () => {
           )}
 
           {isAuthenticated && (
-            <Link to="/">
+            <Link to="/" className="text-decoration-none">
               <button
-                className="btn btn-danger ms-2"
+                className="text-danger ms-3 buttonSalir navbaritems"
                 onClick={() => {
                   localStorage.removeItem("token");
                   localStorage.removeItem("role");

@@ -107,6 +107,7 @@ export const Signup = () => {
                 <input
                   type="email"
                   className="form-control rounded-pill"
+                  placeholder="Ingresa tu email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -114,10 +115,11 @@ export const Signup = () => {
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Nombre Completo</label>
+                <label className="form-label"> Nombre Completo</label>
                 <input
                   type="text"
                   className="form-control rounded-pill"
+                  placeholder="Ingresa tu nombre completo"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
