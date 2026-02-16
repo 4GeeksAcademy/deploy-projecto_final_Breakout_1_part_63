@@ -195,21 +195,22 @@ export const EditReadingTeacher = () => {
                                 <div className="main-header-inner main-header-inner--todo d-flex align-items-center gap-3">
                                     <Link
                                         to="/teacher/readings"
-                                        className="btn btn-light rounded-circle shadow-sm"
+                                        className="btn btn-light rounded-circle p-1"
                                     >
-                                        <i className="bi bi-arrow-left"></i>
+                                        ←   Volver 
                                     </Link>
 
                                     <div>
-                                        <h2 className="header-title mb-0">
+                                        <h2 className="header-title mb-0 ">
                                             ✏️ Editar lectura
                                         </h2>
-                                        <p className="header-subtitle mb-0">
+                                        <p className="header-subtitle mb-0 me-4">
                                             Modifica los detalles de la lectura existente
                                         </p>
                                     </div>
                                 </div>
                             </div>
+                           
 
                             <div className="main-content main-content--todo">
 

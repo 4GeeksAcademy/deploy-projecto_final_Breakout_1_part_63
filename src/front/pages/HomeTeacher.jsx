@@ -271,7 +271,7 @@ export const HomeTeacher = () => {
     </div>
 <div className="col-6 text-end">
       
-<Link to="/todoviewstudent">
+<Link to="/homeTeacher/todos">
         <button className="btn btn-outline-dark fs-6 p-1 mt-1 me-2">
           Ver todas las tareas →
         </button>

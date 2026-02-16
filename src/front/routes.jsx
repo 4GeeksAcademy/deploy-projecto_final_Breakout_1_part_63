@@ -38,6 +38,8 @@ import { EditTodoTeacher } from "./pages/EditTodoTeacher.jsx";
 
 
 
+
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     // CreateRoutesFromElements function allows you to build route elements declaratively.
@@ -64,6 +66,7 @@ export const router = createBrowserRouter(
       <Route path="/reading/:id" element={<IndividualReadingViewStudent />} />
       <Route path="/reading/teacher/:id" element={<IndividualReadingViewTeacher />} />
       <Route path="/reading/edit/:id" element={<EditReadingTeacher />} />
+      
 
       <Route path="/teacher/readings" element={<TeacherViewReadings />} />
       <Route path="/todos/:id" element={<IndividualTodoViewStudent />} />

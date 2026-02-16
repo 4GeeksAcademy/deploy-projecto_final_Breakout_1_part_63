@@ -102,17 +102,27 @@ export const StudentViewReadings = () => {
 
     return (
         <div className="container mt-5">
-           
+
+             <div className="m-0 p-0">
+                            <img
+                                src= "https://res.cloudinary.com/dxvdismgz/raw/upload/v1771106272/Screenshot_2026-02-14_at_3.54.56_p.m._zxz1ju.png"
+                                className="img-fluid w-100 rounded p-0"
+                                alt="cover"
+                                style={{ maxHeight: "250px", objectFit: "cover" }}
+                            />
+                        </div>
+           <h2 className="display-5 fw-bold mb-2 mt-2 ">
+                                Tus lecturas,  <span className="text-primary">{store.user?.name || "Estudiante"}</span>
+                            </h2>
+
         <Link to="/homeStudent">
-								<button className="btn btn-outline-dark fs-6 p-1">
+								<button className="btn btn-outline-dark fs-6 p-1 mb-3">
 									←   Volver a Página Principal
 								</button>
 							</Link>
           
 
-            <h2 className="display-5 fw-bold mb-4 ">
-                                Tus lecturas,  <span className="text-primary">{store.user?.name || "Estudiante"}</span>
-                            </h2>
+            
         
                             
 

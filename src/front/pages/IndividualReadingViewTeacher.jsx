@@ -74,18 +74,18 @@ export const IndividualReadingViewTeacher = () => {
 
             <div className="m-0 p-0">
                 <img
-                    src={portada}
+                    src= "https://res.cloudinary.com/dxvdismgz/raw/upload/v1771108762/Screenshot_2026-02-14_at_4.38.20_p.m._kvivpy.png"
                     className="img-fluid w-100 rounded"
                     alt="cover"
-                    style={{ maxHeight: "250px", objectFit: "cover" }}
+                    style={{ maxHeight: "300px", objectFit: "cover" }}
                 />
             </div>
 
             <div className="text-center col-8 mx-auto">
 
-                <h2 className="mb-4">
+                <h1 className="mt-4">
                     Título de lectura: {reading.title}
-                </h2>
+                </h1>
 
                 <hr />
 
@@ -93,6 +93,8 @@ export const IndividualReadingViewTeacher = () => {
                 <p className="mt-3">
                     {reading.content}
                 </p>
+
+                <hr />
 
                 {reading.reading_url && (
                     <div className="row">
@@ -113,16 +115,25 @@ export const IndividualReadingViewTeacher = () => {
                 <p>
                     Haz click en el botón para descargar el archivo de la lectura.
                 </p>
+
+                <hr />
+                <div className="row">
+                    <div>
                 <Link
     to={`/reading/edit/${reading.id}`}
     className="btn btn-warning me-2"
 >
     Editar lectura
 </Link>
+</div>
 
+<div>
                 <Link to="/teacher/readings" className="btn btn-success mt-4 mb-3">
                     Volver a todas las lecturas
                 </Link>
+                </div>
+                
+                </div>
 
             </div>
 

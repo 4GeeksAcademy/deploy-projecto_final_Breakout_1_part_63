@@ -45,24 +45,22 @@ export const IndividualReadingViewStudent = () => {
 
         <div className="container mt-1">
 
-            {err && <div className="alert alert-danger">{err}</div>}
 
-
-            <div className="m-0 p-0">
+<div className="m-0 p-0">
                 <img
-                    src={portada}
+                    src= "https://res.cloudinary.com/dxvdismgz/raw/upload/v1771108762/Screenshot_2026-02-14_at_4.38.20_p.m._kvivpy.png"
                     className="img-fluid w-100 rounded"
                     alt="cover"
-                    style={{ maxHeight: "250px", objectFit: "cover" }}
+                    style={{ maxHeight: "300px", objectFit: "cover" }}
                 />
             </div>
 
 
             <div className="text-center col-8 mx-auto">
 
-                <h2 className="mb-4">
+                <h1 className="mt-4">
                     Título de lectura: {reading.title}
-                </h2>
+                </h1>
 
                 <hr />
 
@@ -71,7 +69,7 @@ export const IndividualReadingViewStudent = () => {
                     {reading.content}
                 </p>
 
-                
+                <hr />
 
                 <div className="row">
                     <div className="col-4 m-auto">
@@ -88,6 +86,8 @@ export const IndividualReadingViewStudent = () => {
                 </div>
 
                 <p>Haz click en el botón de "Descargar Archivo" para descargar el archivo de la lectura:</p>
+
+                  <hr />
 
                 <Link to="/readings/student" className="btn btn-success mt-4 mb-3">
                     Volver a todas las lecturas

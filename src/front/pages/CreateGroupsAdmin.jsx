@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const CreateGroupsAdmin = () => {
@@ -209,9 +209,9 @@ export const CreateGroupsAdmin = () => {
         <aside className="col-12 col-lg-3 sidebar-left">
           <div className="sidebar-inner">
             <div className="sidebar-header">
-              <div className="back-pill" onClick={() => navigate(-1)} role="button" aria-label="volver">
-                ←
-              </div>
+              <Link to="/homeAdmin" className="btn btn-warning p-0">
+                                 ← Volver 
+                              </Link>
               <h5 className="mb-0 sidebar-title">Bienvenido, Administrador</h5>
             </div>
 
