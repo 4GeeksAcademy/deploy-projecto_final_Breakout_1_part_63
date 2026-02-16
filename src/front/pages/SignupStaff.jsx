@@ -1,13 +1,21 @@
 import { useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import { useNavigate } from "react-router-dom";
+
 
 export const SignupStaff = () => {
   
   useGlobalReducer();
 
+  const navigate = useNavigate();
+
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const [role, setRole] = useState("");
 
   const [err, setErr] = useState(null);
@@ -17,6 +25,11 @@ export const SignupStaff = () => {
     e.preventDefault();
     setErr(null);
     setSuccess(false);
+
+    if (password !== confirmPassword) {
+    setErr("Las contraseñas no coinciden");
+    return;
+  }
 
     try {
       const backend = import.meta.env.VITE_BACKEND_URL;
@@ -31,6 +44,8 @@ export const SignupStaff = () => {
           role,
         }),
       });
+
+      navigate("/homeAdmin");
 
       const data = await resp.json();
 
@@ -72,7 +87,7 @@ export const SignupStaff = () => {
 
         
         <div className="col-md-6 d-flex align-items-center justify-content-center">
-          <div className="w-75" style={{ maxWidth: "420px" }}>
+          <div className="w-75 " style={{ maxWidth: "420px" }}>
 
             <h3 className="text-center mb-4">
               REGISTRO PERSONAL
@@ -94,8 +109,8 @@ export const SignupStaff = () => {
               </div>
             )}
 
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
+            <form  onSubmit={handleSubmit}>
+              <div className="mb-0">
                 <label className="form-label">Email</label>
                 <input
                   type="email"
@@ -133,19 +148,79 @@ export const SignupStaff = () => {
                 </select>
               </div>
 
-              <div className="mb-4">
-                <label className="form-label">Contraseña</label>
-                <input
-                  type="password"
-                  className="form-control rounded-pill"
-                  placeholder="Contraseña"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
+              
 
-              <div className="text-center">
+                <div className="mb-4">
+  <label className="form-label">Contraseña</label>
+
+  <div className="position-relative">
+
+    <input
+      type={showPassword ? "text" : "password"}
+      className="form-control rounded-pill pe-5"
+      placeholder="Crea una contraseña"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      required
+    />
+
+    <button
+      type="button"
+      className="eye-btn"
+      onClick={() => setShowPassword(!showPassword)}
+    >
+      {showPassword ? (
+        <i className="fa-solid fa-eye-slash eye-icon"></i>
+      ) : (
+        <i className="fa-solid fa-eye eye-icon"></i>
+      )}
+    </button>
+
+  </div>
+</div>
+
+
+                  <div className="mb-4">
+  <label className="form-label">Confirmar Contraseña</label>
+
+  <div className="position-relative">
+
+    <input
+      type={showPasswordConfirm ? "text" : "password"}
+      className="form-control rounded-pill pe-5"
+      placeholder="Confirma tu contraseña"
+      value={confirmPassword}
+      onChange={(e) => setConfirmPassword(e.target.value)}
+      required
+    />
+
+    <button
+      type="button"
+      className="eye-btn"
+      onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+    >
+      {showPasswordConfirm ? (
+        <i className="fa-solid fa-eye-slash eye-icon"></i>
+      ) : (
+        <i className="fa-solid fa-eye eye-icon"></i>
+      )}
+    </button>
+
+    
+
+  </div>
+ 
+</div>
+ {password !== confirmPassword && confirmPassword && (
+  <small className="text-danger">
+    Las contraseñas no coinciden
+  </small>
+)}
+
+
+
+
+              <div className="text-center ">
                 <button
                   className="btn btn-info rounded-pill px-5"
                   disabled={success}

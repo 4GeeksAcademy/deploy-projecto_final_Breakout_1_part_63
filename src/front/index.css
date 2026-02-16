@@ -653,3 +653,24 @@
 .btn-info:hover {
   background-color: #3bb1b5;
 }
+
+.eye-btn {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.eye-icon {
+  font-size: 18px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.eye-btn:active .eye-icon {
+  transform: scale(0.8) rotate(15deg);
+  opacity: 0.6;
+}

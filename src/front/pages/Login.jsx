@@ -7,6 +7,8 @@ export const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [err, setErr] = useState(null);
+    const [showPassword, setShowPassword] = useState(false);
+
 
     const navigate = useNavigate();
     const { store, dispatch } = useGlobalReducer();
@@ -61,7 +63,11 @@ export const Login = () => {
         } catch (error) {
             setErr(error.message);
         }
+
+        
     };
+
+    
 
     return (
   <div className="container-fluid vh-100">
@@ -119,33 +125,58 @@ export const Login = () => {
               />
             </div>
 
-            <div className="mb-4">
-              <label className="form-label">Contraseña</label>
-              <input
-                type="password"
-                className="form-control rounded-pill"
-                placeholder="Ingresa tu contraseña"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+
+          <div className="mb-4">
+  <label className="form-label">Contraseña</label>
+
+  <div className="position-relative">
+
+    <input
+      type={showPassword ? "text" : "password"}
+      className="form-control rounded-pill pe-5"
+      placeholder="Ingresa tu contraseña"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      required
+    />
+
+    <button
+      type="button"
+      className="eye-btn"
+      onClick={() => setShowPassword(!showPassword)}
+    >
+      {showPassword ? (
+        <i className="fa-solid fa-eye-slash eye-icon"></i>
+      ) : (
+        <i className="fa-solid fa-eye eye-icon"></i>
+      )}
+    </button>
+
+  </div>
+</div>
+
+
+
            <div className="d-flex justify-content-between mb-4"> 
             <div> 
               <input type="checkbox" className="form-check-input me-2" /> 
               <label className="form-check-label">Recuerdame</label> 
               </div>
               <Link to="/forgotpassword">
-              <button className="btn btn-sucess">
+              <button className="btn btn-sucess" type="button">
+                
                 ¿Olvidaste tu contraseña?
               </button>
               </Link>
               </div>
             <div className="text-center">
-              <button className="btn btn-info rounded-pill px-5">
-                Ingresar
-              </button>
-            </div>
+    <button
+      type="submit"
+      className="btn btn-info rounded-pill px-5"
+    >
+      Ingresar
+    </button>
+  </div>
           </form>
 
         </div>
