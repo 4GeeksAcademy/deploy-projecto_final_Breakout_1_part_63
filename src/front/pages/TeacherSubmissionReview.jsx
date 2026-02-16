@@ -19,6 +19,7 @@ export const TeacherSubmissionReview = () => {
 
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
+   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const authHeaders = useMemo(() => {
     return {
@@ -224,10 +225,15 @@ export const TeacherSubmissionReview = () => {
         setFeedback(stParsed.json?.feedback || "");
       }
 
-      alert("Calificación guardada ✅");
+      // alert("Calificación guardada ✅");
+      setShowDeleteModal(true);
     } catch (e) {
       setErr(e.message || "Error guardando calificación");
     }
+
+    setTimeout(() => {
+      navigate("/homeTeacher/todos");
+    }, 1000);
   };
 
   if (loading) return <div className="container mt-5">Cargando...</div>;
@@ -338,6 +344,26 @@ export const TeacherSubmissionReview = () => {
           Volver
         </button>
       </div>
+
+       {showDeleteModal && (
+                <>
+                    <div className="modal fade show d-block" tabIndex="-1">
+                        <div className="modal-dialog modal-dialog-centered">
+                            <div className="modal-content border-0 shadow-lg rounded-4">
+
+                                <div className="modal-header border-0 justify-content-center">
+                                    <h5 className="modal-title text-success text-center fw-bold">
+                                         Tarea calificada ✅
+                                    </h5>
+                                    </div> 
+                                    </div> 
+                                    </div> 
+                                    </div> 
+                                  
+                                    </> )}
+
     </div>
+
+   
   );
 };
