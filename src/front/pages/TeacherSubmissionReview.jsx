@@ -21,6 +21,7 @@ export const TeacherSubmissionReview = () => {
   const [err, setErr] = useState(null);
    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  const [okMsg, setOkMsg] = useState(null);
   const authHeaders = useMemo(() => {
     return {
       "Content-Type": "application/json",
@@ -164,7 +165,7 @@ export const TeacherSubmissionReview = () => {
 
   const saveReview = async () => {
     setErr(null);
-
+ setOkMsg(null);
     try {
       if (!backend) throw new Error("VITE_BACKEND_URL no está definido.");
       if (!submissionId) throw new Error("Falta submissionId.");
@@ -212,7 +213,7 @@ export const TeacherSubmissionReview = () => {
           throw new Error(msg);
         }
       }
-
+       
       const stResp = await fetch(
         `${backend}/submissions/${submissionId}/status`,
         { headers: token ? { Authorization: `Bearer ${token}` } : {} }
@@ -227,6 +228,8 @@ export const TeacherSubmissionReview = () => {
 
       // alert("Calificación guardada ✅");
       setShowDeleteModal(true);
+      setOkMsg("Calificación guardada exitosamente.");
+      
     } catch (e) {
       setErr(e.message || "Error guardando calificación");
     }
@@ -280,9 +283,14 @@ export const TeacherSubmissionReview = () => {
           <p className="mb-0">
             <b>Link:</b>{" "}
             {submission?.response_url ? (
-              <a href={submission.response_url} target="_blank" rel="noreferrer">
-                Ver archivo
-              </a>
+              <a
+  href={submission.response_url}
+  target="_blank"
+  rel="noreferrer"
+  style={{  color: "#49BBBD", border: "none" }}
+>
+  <span> Ver archivo </span>
+</a>
             ) : (
               "—"
             )}
@@ -323,9 +331,13 @@ export const TeacherSubmissionReview = () => {
           </div>
 
           <div className="d-flex gap-2 mt-3">
-            <button className="btn btn-primary" onClick={saveReview}>
-              Guardar calificación
-            </button>
+            <button
+  className="btn"
+  style={{ backgroundColor: "#5B72EE", color: "#fff", border: "none" }}
+  onClick={saveReview}
+>
+  Guardar calificación
+</button>
             <button
               className="btn btn-outline-secondary"
               onClick={() => {
@@ -340,6 +352,11 @@ export const TeacherSubmissionReview = () => {
       </div>
 
       <div className="mb-5">
+        {okMsg && (
+  <div className="alert alert-success" role="alert">
+    {okMsg}
+  </div>
+)}
         <button className="btn btn-outline-secondary" onClick={() => navigate(-1)}>
           Volver
         </button>

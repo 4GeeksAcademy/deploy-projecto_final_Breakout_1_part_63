@@ -130,11 +130,16 @@ console.log("Payload:", payload);
          </div>
  
       <div className="text-center col-8 mx-auto">
-        <h2 className="mb-4 mt-4">Título de tarea: {todo.title}</h2>
+     
+         
+        <h2 className="mb-3 mt-2">Título de tarea: {todo.title} </h2>
         <hr />
 
         <h5>Instrucciones de tarea:</h5>
-        <p className="mt-3 text-start">{todo.description}</p>
+        <p className="  mt-3 text-start">
+            Fecha: {todo.due_date || "Sin fecha"}
+          </p>
+        <p className="mt-1 text-start">{todo.description}</p>
 
         {errorMsg && <div className="alert alert-danger text-start">{errorMsg}</div>}
         {okMsg && <div className="alert alert-success text-start">{okMsg}</div>}
