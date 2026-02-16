@@ -227,7 +227,7 @@ export const TeacherSubmissionReview = () => {
       }
 
       // alert("Calificación guardada ✅");
-      setShowDeleteModal(true);
+      // setShowDeleteModal(true);
       setOkMsg("Calificación guardada exitosamente.");
       
     } catch (e) {
@@ -362,7 +362,7 @@ export const TeacherSubmissionReview = () => {
         </button>
       </div>
 
-       {showDeleteModal && (
+       {/* {showDeleteModal && (
                 <>
                     <div className="modal fade show d-block" tabIndex="-1">
                         <div className="modal-dialog modal-dialog-centered">
@@ -377,7 +377,7 @@ export const TeacherSubmissionReview = () => {
                                     </div> 
                                     </div> 
                                   
-                                    </> )}
+                                    </> )} */}
 
     </div>
 
