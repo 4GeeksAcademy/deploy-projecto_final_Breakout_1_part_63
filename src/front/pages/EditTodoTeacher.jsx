@@ -170,10 +170,10 @@ export const EditTodoTeacher = () => {
                             <div className="main-header mb-4">
                                 <div className="main-header-inner main-header-inner--todo d-flex align-items-center gap-3">
                                     <Link
-                                        to="/teacher/todos"
-                                        className="btn btn-light rounded-circle shadow-sm"
+                                        to="/homeTeacher/todos"
+                                        className="btn btn-light rounded-circle p-1"
                                     >
-                                        <i className="bi bi-arrow-left"></i>
+                                        ←   Volver 
                                     </Link>
 
                                     <div>

@@ -27,7 +27,7 @@ export const CardsTodoViewTeacher = ({
                                 Ver entregas
                             </Link>
                             <Link
-                                to={`/todo/edit/${todo.id}`}
+                                to={`/EditTodoTeacher/${todo.id}`}
                                 className="btn btn-warning ms-2 fs-5"
                             >
                                 Editar tarea
