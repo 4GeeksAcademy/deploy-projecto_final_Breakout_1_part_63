@@ -211,20 +211,21 @@ export const TeacherSubmissionsList = () => {
               </div>
 
               <div className="d-flex align-items-center gap-3">
-                <span className={`badge ${isPending ? "bg-secondary" : "bg-success"}`}>
+                <span className="badge" style={{ backgroundColor: isPending ? "#6c757d" : "#5B72EE",  color: "#fff" }}
+>
                   {r.state}
                 </span>
 
                 {r.submission ? (
                   <Link
                     to={`/homeTeacher/todos/${todoId}/submissions/${r.submission.id}`}
-                    className="btn btn-sm btn-primary"
-                  >
+                    className="btn btn-sm btn-primary " style={{ backgroundColor: "#49BBBD", borderColor: "#49BBBD" }}>
+                  
                     Corregir
                   </Link>
                 ) : (
-                  <button className="btn btn-sm btn-outline-secondary" disabled>
-                    Sin entrega
+                  <button className="btn btn-sm btn-outline-secondary"  disabled>
+                    Sin entrega 
                   </button>
                 )}
               </div>
