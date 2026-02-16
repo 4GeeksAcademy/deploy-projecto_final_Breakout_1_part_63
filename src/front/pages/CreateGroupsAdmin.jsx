@@ -184,7 +184,7 @@ export const CreateGroupsAdmin = () => {
         if (!addResp.ok) throw new Error(addData?.msg || `Error agregando alumno id=${sid}`);
       }
 
-      setMsg(`✅ Grupo creado (id: ${groupId}) y alumnos asignados correctamente.`);
+      setMsg(`✅ Grupo creado y alumnos asignados correctamente.`);
       setGroupName("");
       setTeacherId("");
       setStudentIds([]);
