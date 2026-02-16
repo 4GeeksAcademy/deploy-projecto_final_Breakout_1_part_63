@@ -382,7 +382,7 @@ def create_reading_automatic():
                 <div style="max-width:600px; margin:auto; background:white; border-radius:14px; overflow:hidden; box-shadow:0 10px 22px rgba(0,0,0,0.08);">
 
                     <div style="background:#5B72EE; padding:18px 20px; text-align:center;">
-                    <img src="https://res.cloudinary.com/dxvdismgz/raw/upload/v1771243499/logofinal_1_hdpo88.png"
+                    <img src= "https://res.cloudinary.com/dxvdismgz/raw/upload/v1771243499/logofinal_1_hdpo88.png"
                         alt="ACADEMICA"
                         style="max-width:170px; height:auto; display:inline-block;" />
                     </div>
@@ -409,7 +409,7 @@ def create_reading_automatic():
                     </p>
 
                     <div style="margin-top:16px;">
-                        <a href="https://opulent-space-engine-x55q4wvgpxgqcvq97-3000.app.github.dev/"
+                        <a href= {frontend_url}
                         style="display:inline-block; background:#49bbbd; color:white; padding:12px 16px; border-radius:10px; text-decoration:none; font-weight:700;">
                         Ir a ACADEMICA
                         </a>
@@ -2108,7 +2108,7 @@ def create_todo_with_google_event():
                         </p>
 
                         <div style="margin-top:16px;">
-                            <a href="https://opulent-space-engine-x55q4wvgpxgqcvq97-3000.app.github.dev/"
+                            <a href= {frontend_url}
                             style="display:inline-block; background:#49bbbd; color:white; padding:12px 16px; border-radius:10px; text-decoration:none; font-weight:700;">
                             Ir a ACADEMICA
                             </a>
