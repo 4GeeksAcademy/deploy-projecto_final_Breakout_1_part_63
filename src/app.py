@@ -1325,19 +1325,37 @@ def get_todo_by_id(todo_id):
 @app.route('/todos/<int:todo_id>', methods=['PUT'])
 def update_todo(todo_id):
     todo = Todo.query.get(todo_id)
+
     if not todo:
-        return jsonify({"msg": "tarea no encontrada"}), 404
+        return jsonify({"msg": "Tarea no encontrada"}), 404
+
     body = request.get_json(silent=True)
+
     if body is None:
         return jsonify({"msg": "Complete los campos requeridos"}), 400
+
     if 'title' in body:
         todo.title = body['title']
     if 'description' in body:
         todo.description = body['description']
-    if 'due_date' in body:
-        todo.due_date = body['due_date']
+    if 'due_date' in body and body['due_date']:
+        try:
+            todo.due_date = datetime.strptime(
+                body['due_date'], "%Y-%m-%d"
+            ).date()
+        except ValueError:
+            return jsonify({"msg": "Formato de fecha inválido. Use YYYY-MM-DD"}), 400
+    if 'archive_url' in body:
+        todo.archive_url = body['archive_url']
+    if 'group_id' in body:
+        todo.group_id = body['group_id']
+
     db.session.commit()
-    return jsonify({"msg": "Cambios aplicados a la tarea"}), 200
+
+    return jsonify({
+        "msg": "Cambios aplicados a la tarea",
+        "todo": todo.serialize()
+    }), 200
 
 
 @app.route('/todos/<int:todo_id>', methods=['DELETE'])

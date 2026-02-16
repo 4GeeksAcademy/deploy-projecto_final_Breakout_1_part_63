@@ -34,6 +34,7 @@ import { ResetPassword } from "./pages/ResetPassword.jsx";
 import { TodoViewTeacher } from "./pages/TodoViewTeacher.jsx";
 import { TeacherSubmissionsList } from "./pages/TeacherSubmissionsList.jsx";
 import { TeacherSubmissionReview } from "./pages/TeacherSubmissionReview.jsx";
+import { EditTodoTeacher } from "./pages/EditTodoTeacher.jsx";
 
 
 
@@ -81,6 +82,7 @@ export const router = createBrowserRouter(
       <Route path="/homeTeacher/todos" element={<TodoViewTeacher />} />
       <Route path="/homeTeacher/todos/:todoId/submissions" element={<TeacherSubmissionsList />}/>
       <Route path="/homeTeacher/todos/:todoId/submissions/:submissionId" element={<TeacherSubmissionReview />}/>
+      <Route path="/EditTodoTeacher/:id" element={<ProtectedRoute allowedRoles={["TEACHER"]}> <EditTodoTeacher /> </ProtectedRoute>} />
 
     </Route>
   )
