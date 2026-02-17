@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import portada from "../assets/img/portada.png";
+
 
 export const IndividualReadingViewTeacher = () => {
 
