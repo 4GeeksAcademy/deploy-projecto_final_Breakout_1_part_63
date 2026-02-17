@@ -10,10 +10,10 @@ export const Navbar = () => {
   const role = store.role || localStorage.getItem("role");
 
   return (
-    <nav className={`navbar ${isAuthenticated ? "bg-white" : "g-color-bg"}`}>
-      <div className="container d-flex align-items-center justify-content-between mt-2">
+    <nav className={`navbar navbar-expand-lg ${isAuthenticated ? "bg-white" : "g-color-bg"}`}>
+    <div className="container mt-2">
 
-        <div className="d-flex align-items-center">
+        
           <Link to={isAuthenticated ? `/home${role}` : "/"}>
             <img
               src={isAuthenticated ? logoLogeado : logofinal}
@@ -30,10 +30,20 @@ export const Navbar = () => {
           >
             ACADEMICA
           </span>
-        </div>
+          
 
-       
-        <div>
+           <button
+        className="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarContent"
+      >
+        <span className="navbar-toggler-icon"></span>
+      </button>
+
+      <div className="collapse navbar-collapse justify-content-end" id="navbarContent">
+         <div className="navbar-nav align-items-lg-center text-end">
+     
           {!isAuthenticated && (
             <>
               <Link to="/Signup">
@@ -160,7 +170,7 @@ export const Navbar = () => {
             </Link>
           )}
         </div>
-
+</div>
       </div>
     </nav>
   );
