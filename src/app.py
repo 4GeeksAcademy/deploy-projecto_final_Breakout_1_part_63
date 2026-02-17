@@ -1177,31 +1177,41 @@ def update_submission(submission_id):
         if description is None and response_url is None:
             return jsonify({"msg": "No hay nada que actualizar"}), 400
 
-        student_id = body.get("student_id")
+        student_group_id = body.get("student_id")  # Este es ID de Students_Group
 
-        if student_id is None:
+        if student_group_id is None:
             return jsonify({"msg": "student_id es obligatorio"}), 400
 
-        user = User.query.get(student_id)
+        
+        student_group = Students_Group.query.get(student_group_id)
+        if not student_group:
+            return jsonify({"msg": "Student_Group no existe"}), 404
 
+
+        user = student_group.user
         if not user:
-            return jsonify({"msg": "Usuario no existe"}), 404
+            return jsonify({"msg": "Usuario no encontrado"}), 404
 
+       
         if user.role.lower() != "student":
             return jsonify({"msg": "Solo un alumno puede modificar una entrega"}), 403
 
+        
         submission = Submission.query.get(submission_id)
         if not submission:
             return jsonify({"msg": "No existe la entrega"}), 404
 
-        if submission.student_id != student_id:
+       
+        if submission.student_id != student_group_id:
             return jsonify({"msg": "No autorizado para modificar esta entrega"}), 403
 
+       
         if description is not None:
             submission.description = description
         if response_url is not None:
             submission.response_url = response_url
 
+     
         status = Status.query.filter_by(submission_id=submission_id).first()
         
         if status and status.state == 'REJECTED':
@@ -1220,7 +1230,7 @@ def update_submission(submission_id):
                 "todo_id": submission.todo_id,
                 "student_id": submission.student_id
             },
-            "status_reset": bool(status and status.state == 'PENDING')  
+            "status_reset": bool(status and status.state == 'PENDING')
         }), 200
 
     except Exception as e:
