@@ -18,10 +18,10 @@ export const Signup = () => {
     e.preventDefault();
     setErr(null);
 
-     if (password !== confirmPassword) {
-    setErr("Las contraseñas no coinciden");
-    return;
-  }
+    if (password !== confirmPassword) {
+      setErr("Las contraseñas no coinciden");
+      return;
+    }
 
     try {
       const backend = import.meta.env.VITE_BACKEND_URL;
@@ -42,11 +42,11 @@ export const Signup = () => {
         throw new Error(data.msg || "Error al registrar");
       }
 
-     
+
       localStorage.setItem("token", data.access_token);
       localStorage.setItem("role", data.role);
 
-     
+
       dispatch({
         type: "LOGIN_SUCCESS",
         payload: {
@@ -64,7 +64,7 @@ export const Signup = () => {
   };
 
   return (
-    <div className="container-fluid vh-100">
+    <div className="container-fluid min-vh-100 py-4 py-md-0">
       <div className="row h-100">
 
         <div className="col-md-6 d-none d-md-flex p-4">
@@ -81,8 +81,8 @@ export const Signup = () => {
           </div>
         </div>
 
-        <div className="col-md-6 d-flex align-items-center justify-content-center">
-          <div className="w-75" style={{ maxWidth: "420px" }}>
+        <div className="col-12 col-md-6 d-flex align-items-center justify-content-center px-3">
+          <div className="w-100" style={{ maxWidth: "420px" }}>
 
             <h3 className="text-center mb-4">REGÍSTRATE EN ACADEMICA</h3>
 
@@ -107,6 +107,7 @@ export const Signup = () => {
                 <input
                   type="email"
                   className="form-control rounded-pill"
+                  placeholder="Ingresa tu email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -114,81 +115,82 @@ export const Signup = () => {
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Nombre Completo</label>
+                <label className="form-label"> Nombre Completo</label>
                 <input
                   type="text"
                   className="form-control rounded-pill"
+                  placeholder="Ingresa tu nombre completo"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
                 />
               </div>
 
-                   <div className="mb-4">
-  <label className="form-label">Contraseña</label>
+              <div className="mb-4">
+                <label className="form-label">Contraseña</label>
 
-  <div className="position-relative">
+                <div className="position-relative">
 
-    <input
-      type={showPassword ? "text" : "password"}
-      className="form-control rounded-pill pe-5"
-      placeholder="Crea una contraseña"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      required
-    />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="form-control rounded-pill pe-5"
+                    placeholder="Crea una contraseña"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
 
-    <button
-      type="button"
-      className="eye-btn"
-      onClick={() => setShowPassword(!showPassword)}
-    >
-      {showPassword ? (
-        <i className="fa-solid fa-eye-slash eye-icon"></i>
-      ) : (
-        <i className="fa-solid fa-eye eye-icon"></i>
-      )}
-    </button>
+                  <button
+                    type="button"
+                    className="eye-btn"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <i className="fa-solid fa-eye-slash eye-icon"></i>
+                    ) : (
+                      <i className="fa-solid fa-eye eye-icon"></i>
+                    )}
+                  </button>
 
-  </div>
-</div>
+                </div>
+              </div>
 
 
-                  <div className="mb-4">
-  <label className="form-label">Confirmar Contraseña</label>
+              <div className="mb-4">
+                <label className="form-label">Confirmar Contraseña</label>
 
-  <div className="position-relative">
+                <div className="position-relative">
 
-    <input
-      type={showPasswordConfirm ? "text" : "password"}
-      className="form-control rounded-pill pe-5"
-      placeholder="Confirma tu contraseña"
-      value={confirmPassword}
-      onChange={(e) => setConfirmPassword(e.target.value)}
-      required
-    />
+                  <input
+                    type={showPasswordConfirm ? "text" : "password"}
+                    className="form-control rounded-pill pe-5"
+                    placeholder="Confirma tu contraseña"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
 
-    <button
-      type="button"
-      className="eye-btn"
-      onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-    >
-      {showPasswordConfirm ? (
-        <i className="fa-solid fa-eye-slash eye-icon"></i>
-      ) : (
-        <i className="fa-solid fa-eye eye-icon"></i>
-      )}
-    </button>
+                  <button
+                    type="button"
+                    className="eye-btn"
+                    onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                  >
+                    {showPasswordConfirm ? (
+                      <i className="fa-solid fa-eye-slash eye-icon"></i>
+                    ) : (
+                      <i className="fa-solid fa-eye eye-icon"></i>
+                    )}
+                  </button>
 
-    
 
-  </div>
-  {password !== confirmPassword && confirmPassword && (
-  <small className="text-danger">
-    Las contraseñas no coinciden
-  </small>
-)}
-</div>
+
+                </div>
+                {password !== confirmPassword && confirmPassword && (
+                  <small className="text-danger">
+                    Las contraseñas no coinciden
+                  </small>
+                )}
+              </div>
 
 
 

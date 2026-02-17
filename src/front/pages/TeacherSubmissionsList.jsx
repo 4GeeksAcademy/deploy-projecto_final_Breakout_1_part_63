@@ -4,7 +4,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 export const TeacherSubmissionsList = () => {
 
 
-  
+
   const { todoId } = useParams();
   const navigate = useNavigate();
 
@@ -43,7 +43,7 @@ export const TeacherSubmissionsList = () => {
         if (!backendBase) throw new Error("VITE_BACKEND_URL no está definido.");
         if (!todoId) throw new Error("Falta todoId en la URL.");
 
-       
+
         const todoResp = await fetch(`${backendBase}/todos/${todoId}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
@@ -60,7 +60,7 @@ export const TeacherSubmissionsList = () => {
 
         if (!todoData?.group_id) throw new Error("La tarea no tiene group_id.");
 
-       
+
         const studentsResp = await fetch(
           `${backendBase}/groups/${todoData.group_id}/students`,
           { headers: token ? { Authorization: `Bearer ${token}` } : {} }
@@ -70,8 +70,8 @@ export const TeacherSubmissionsList = () => {
         if (!studentsResp.ok) {
           throw new Error(
             studentsParsed.json?.msg ||
-              studentsParsed.text ||
-              "Error al cargar alumnos del grupo"
+            studentsParsed.text ||
+            "Error al cargar alumnos del grupo"
           );
         }
 
@@ -89,7 +89,7 @@ export const TeacherSubmissionsList = () => {
         })));
 
 
-       
+
         const subResp = await fetch(`${backendBase}/submissions?todo_id=${todoId}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
@@ -104,8 +104,8 @@ export const TeacherSubmissionsList = () => {
         const subs = Array.isArray(subParsed.json?.submissions)
           ? subParsed.json.submissions
           : Array.isArray(subParsed.json)
-          ? subParsed.json
-          : [];
+            ? subParsed.json
+            : [];
         setSubmissions(subs);
 
         console.log("SUBMISSIONS:", subs);
@@ -117,7 +117,7 @@ export const TeacherSubmissionsList = () => {
         })));
 
 
-     
+
         const statusMap = {};
         await Promise.all(
           subs.map(async (s) => {
@@ -128,7 +128,7 @@ export const TeacherSubmissionsList = () => {
               if (!r.ok) return;
               const st = await r.json().catch(() => null);
               if (st) statusMap[s.id] = st;
-            } catch {}
+            } catch { }
           })
         );
         setStatusBySubmissionId(statusMap);
@@ -141,35 +141,35 @@ export const TeacherSubmissionsList = () => {
   }, [todoId, backendBase, token]);
 
 
-    const rows = useMemo(() => {
-      const subByStudentGroupId = new Map();
+  const rows = useMemo(() => {
+    const subByStudentGroupId = new Map();
 
-      for (const s of submissions) {
-        if (s?.student_id != null) {
-          subByStudentGroupId.set(String(s.student_id), s);
-        }
+    for (const s of submissions) {
+      if (s?.student_id != null) {
+        subByStudentGroupId.set(String(s.student_id), s);
       }
+    }
 
-      return (students || []).map((st) => {
-        const stKey = String(st.student_group_id); 
-        const sub = subByStudentGroupId.get(stKey) || null;
-        const status = sub ? statusBySubmissionId[sub.id] : null;
+    return (students || []).map((st) => {
+      const stKey = String(st.student_group_id);
+      const sub = subByStudentGroupId.get(stKey) || null;
+      const status = sub ? statusBySubmissionId[sub.id] : null;
 
-        const state = status?.state
-          ? String(status.state).toUpperCase()
-          : sub
+      const state = status?.state
+        ? String(status.state).toUpperCase()
+        : sub
           ? "ENTREGADO"
           : "PENDIENTE";
 
-        return {
-          user_id: st.user_id,
-          name: st.name,
-          email: st.email,
-          submission: sub,
-          state,
-        };
-      });
-    }, [students, submissions, statusBySubmissionId]);
+      return {
+        user_id: st.user_id,
+        name: st.name,
+        email: st.email,
+        submission: sub,
+        state,
+      };
+    });
+  }, [students, submissions, statusBySubmissionId]);
 
 
 
@@ -202,30 +202,30 @@ export const TeacherSubmissionsList = () => {
 
           return (
             <div
-              key={String(r.student_group_id ?? r.user_id)} 
-              className="list-group-item d-flex justify-content-between align-items-center"
+              key={String(r.student_group_id ?? r.user_id)}
+              className="list-group-item tsl-item"
             >
-              <div className="me-3">
+              <div className="tsl-left">
                 <div className="fw-semibold">{r.name}</div>
                 <div className="text-muted small">{r.email}</div>
               </div>
 
-              <div className="d-flex align-items-center gap-3">
-                <span className="badge" style={{ backgroundColor: isPending ? "#6c757d" : "#5B72EE",  color: "#fff" }}
->
+              <div className="tsl-right">
+                <span className="badge tsl-badge" style={{ backgroundColor: isPending ? "#6c757d" : "#5B72EE", color: "#fff" }}>
                   {r.state}
                 </span>
 
                 {r.submission ? (
                   <Link
                     to={`/homeTeacher/todos/${todoId}/submissions/${r.submission.id}`}
-                    className="btn btn-sm btn-primary " style={{ backgroundColor: "#49BBBD", borderColor: "#49BBBD" }}>
-                  
+                    className="btn btn-sm btn-primary tsl-btn"
+                    style={{ backgroundColor: "#49BBBD", borderColor: "#49BBBD" }}
+                  >
                     Corregir
                   </Link>
                 ) : (
-                  <button className="btn btn-sm btn-outline-secondary"  disabled>
-                    Sin entrega 
+                  <button className="btn btn-sm btn-outline-secondary tsl-btn" disabled>
+                    Sin entrega
                   </button>
                 )}
               </div>

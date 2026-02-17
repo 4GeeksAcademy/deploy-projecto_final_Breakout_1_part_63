@@ -5,85 +5,207 @@ import {
   createRoutesFromElements,
   Route,
 } from "react-router-dom";
+
 import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home";
 import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
 import { Signup } from "./pages/Signup";
 import { Login } from "./pages/Login";
-import { CreateTodoForm } from "./pages/CreateTodoForm";
-import { SignupStaff } from "./pages/SignupStaff";
-import { CreateReadings } from "./pages/CreateReadings";
+
+import { ProtectedRoute } from "./components/ProtectedRoute";
+
 import { HomeStudent } from "./pages/homeStudent";
+import { TodoViewStudent } from "./pages/TodoViewStudent.jsx";
+import { IndividualTodoViewStudent } from "./pages/IndividualTodoViewStudent.jsx";
 import { StudentViewReadings } from "./pages/StudentViewReadings.jsx";
 import { IndividualReadingViewStudent } from "./pages/IndividualReadingViewStudent.jsx";
-import { HomeTeacher } from "./pages/HomeTeacher.jsx";
-import { HomeAdmin } from "./pages/HomeAdmin.jsx";
 
-import { IndividualTodoViewStudent } from "./pages/IndividualTodoViewStudent.jsx"
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import { TodoViewStudent } from "./pages/TodoViewStudent.jsx";
-import { CreateGroupsAdmin } from "./pages/CreateGroupsAdmin";
+import { HomeTeacher } from "./pages/HomeTeacher.jsx";
+import { CreateTodoForm } from "./pages/CreateTodoForm";
+import { CreateReadings } from "./pages/CreateReadings";
 import { TeacherViewReadings } from "./pages/TeacherViewReadings";
 import { IndividualReadingViewTeacher } from "./pages/IndividualReadingViewTeacher.jsx";
 import { EditReadingTeacher } from "./pages/EditReadingTeacher.jsx";
 import { TodoDetailTeacher } from "./pages/TodoDetailTeacher.jsx";
-import { ForgotPassword } from "./pages/ForgotPassword.jsx";
-import { ResetPassword } from "./pages/ResetPassword.jsx";
-
 import { TodoViewTeacher } from "./pages/TodoViewTeacher.jsx";
 import { TeacherSubmissionsList } from "./pages/TeacherSubmissionsList.jsx";
 import { TeacherSubmissionReview } from "./pages/TeacherSubmissionReview.jsx";
 import { EditTodoTeacher } from "./pages/EditTodoTeacher.jsx";
 
+import { HomeAdmin } from "./pages/HomeAdmin.jsx";
+import { CreateGroupsAdmin } from "./pages/CreateGroupsAdmin";
+import { SignupStaff } from "./pages/SignupStaff";
 
-
-
+import { ForgotPassword } from "./pages/ForgotPassword.jsx";
+import { ResetPassword } from "./pages/ResetPassword.jsx";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
-    // CreateRoutesFromElements function allows you to build route elements declaratively.
-    // Create your routes here, if you want to keep the Navbar and Footer in all views, add your new routes inside the containing Route.
-    // Root, on the contrary, create a sister Route, if you have doubts, try it!
-    // Note: keep in mind that errorElement will be the default page when you don't get a route, customize that page to make your project more attractive.
-    // Note: The child paths of the Layout element replace the Outlet component with the elements contained in the "element" attribute of these child paths.
-
-    // Root Route: All navigation will start from here.
-    // Root Route: All navigation will start from here.
-    <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
-
-      {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
+    <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>}>
+      {/* PUBLIC */}
       <Route path="/" element={<Home />} />
-      <Route path="/single/:theId" element={<Single />} />  {/* Dynamic route for single items */}
+      <Route path="/single/:theId" element={<Single />} />
       <Route path="/demo" element={<Demo />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/crear-tarea" element={<CreateTodoForm />} />
-      <Route path="/signup-staff" element={<SignupStaff />} />
-      <Route path="/readings-create" element={<CreateReadings />} />
-      <Route path="/homeStudent" element={<HomeStudent />} />
-      <Route path="/readings/student" element={<StudentViewReadings />} />
-      <Route path="/reading/:id" element={<IndividualReadingViewStudent />} />
-      <Route path="/reading/teacher/:id" element={<IndividualReadingViewTeacher />} />
-      <Route path="/reading/edit/:id" element={<EditReadingTeacher />} />
-      
-
-      <Route path="/teacher/readings" element={<TeacherViewReadings />} />
-      <Route path="/todos/:id" element={<IndividualTodoViewStudent />} />
-      <Route path="/todoviewstudent" element={<TodoViewStudent />} />
-      <Route path="/homeStudent" element={<ProtectedRoute allowedRoles={["STUDENT"]}> <HomeStudent /> </ProtectedRoute>} />
-      <Route path="/admin/groups" element={<ProtectedRoute allowedRoles={["ADMIN"]}> <CreateGroupsAdmin /> </ProtectedRoute>}/>
-      <Route path="/homeTeacher" element={<ProtectedRoute allowedRoles={["TEACHER"]}> <HomeTeacher /> </ProtectedRoute>} />
-      <Route path="/homeAdmin" element={<ProtectedRoute allowedRoles={["ADMIN"]}> <HomeAdmin /> </ProtectedRoute>} />
-      <Route path="/teacher/todos/:id" element={<TodoDetailTeacher />} />
       <Route path="/forgotpassword" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 
-      <Route path="/homeTeacher/todos" element={<TodoViewTeacher />} />
-      <Route path="/homeTeacher/todos/:todoId/submissions" element={<TeacherSubmissionsList />}/>
-      <Route path="/homeTeacher/todos/:todoId/submissions/:submissionId" element={<TeacherSubmissionReview />}/>
-      <Route path="/EditTodoTeacher/:id" element={<ProtectedRoute allowedRoles={["TEACHER"]}> <EditTodoTeacher /> </ProtectedRoute>} />
+      <Route
+        path="/homeStudent"
+        element={
+          <ProtectedRoute allowedRoles={["STUDENT"]}>
+            <HomeStudent />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/todoviewstudent"
+        element={
+          <ProtectedRoute allowedRoles={["STUDENT"]}>
+            <TodoViewStudent />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/todos/:id"
+        element={
+          <ProtectedRoute allowedRoles={["STUDENT"]}>
+            <IndividualTodoViewStudent />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/readings/student"
+        element={
+          <ProtectedRoute allowedRoles={["STUDENT"]}>
+            <StudentViewReadings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reading/:id"
+        element={
+          <ProtectedRoute allowedRoles={["STUDENT"]}>
+            <IndividualReadingViewStudent />
+          </ProtectedRoute>
+        }
+      />
 
+      <Route
+        path="/homeTeacher"
+        element={
+          <ProtectedRoute allowedRoles={["TEACHER"]}>
+            <HomeTeacher />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/crear-tarea"
+        element={
+          <ProtectedRoute allowedRoles={["TEACHER"]}>
+            <CreateTodoForm />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/readings-create"
+        element={
+          <ProtectedRoute allowedRoles={["TEACHER"]}>
+            <CreateReadings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/teacher/readings"
+        element={
+          <ProtectedRoute allowedRoles={["TEACHER"]}>
+            <TeacherViewReadings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reading/teacher/:id"
+        element={
+          <ProtectedRoute allowedRoles={["TEACHER"]}>
+            <IndividualReadingViewTeacher />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reading/edit/:id"
+        element={
+          <ProtectedRoute allowedRoles={["TEACHER"]}>
+            <EditReadingTeacher />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/teacher/todos/:id"
+        element={
+          <ProtectedRoute allowedRoles={["TEACHER"]}>
+            <TodoDetailTeacher />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/homeTeacher/todos"
+        element={
+          <ProtectedRoute allowedRoles={["TEACHER"]}>
+            <TodoViewTeacher />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/homeTeacher/todos/:todoId/submissions"
+        element={
+          <ProtectedRoute allowedRoles={["TEACHER"]}>
+            <TeacherSubmissionsList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/homeTeacher/todos/:todoId/submissions/:submissionId"
+        element={
+          <ProtectedRoute allowedRoles={["TEACHER"]}>
+            <TeacherSubmissionReview />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/EditTodoTeacher/:id"
+        element={
+          <ProtectedRoute allowedRoles={["TEACHER"]}>
+            <EditTodoTeacher />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/homeAdmin"
+        element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <HomeAdmin />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/groups"
+        element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <CreateGroupsAdmin />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/signup-staff"
+        element={
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <SignupStaff />
+          </ProtectedRoute>
+        }
+      />
     </Route>
   )
 );

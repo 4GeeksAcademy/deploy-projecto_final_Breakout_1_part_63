@@ -1391,6 +1391,7 @@ def get_todo_by_id(todo_id):
         'due_date': todo.due_date.isoformat(),
         'teacher_id': todo.teacher_id,
         'group_id': todo.group_id,
+        'archive_url': todo.archive_url
     }
     return jsonify(todo_data), 200
 

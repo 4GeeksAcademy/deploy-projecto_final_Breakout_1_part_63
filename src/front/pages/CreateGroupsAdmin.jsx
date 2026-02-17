@@ -49,8 +49,7 @@ export const CreateGroupsAdmin = () => {
       return null;
     }
   };
-
-  const loadTeachers = async () => {
+const loadTeachers = async () => {
     setErr(null);
     setMsg(null);
     setLoadingTeachers(true);
@@ -154,8 +153,7 @@ export const CreateGroupsAdmin = () => {
       setErr("Debes seleccionar al menos 1 alumno.");
       return;
     }
-
-    setCreating(true);
+setCreating(true);
 
     try {
       const createResp = await fetch(`${backend}/groups`, {
