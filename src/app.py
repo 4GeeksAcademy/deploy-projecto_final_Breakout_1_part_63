@@ -1168,7 +1168,6 @@ def submission():
 
 @app.route("/submission/<int:submission_id>", methods=["PUT"])
 def update_submission(submission_id):
-
     try:
         body = request.get_json(silent=True) or {}
 
@@ -1200,9 +1199,15 @@ def update_submission(submission_id):
 
         if description is not None:
             submission.description = description
-
         if response_url is not None:
             submission.response_url = response_url
+
+        status = Status.query.filter_by(submission_id=submission_id).first()
+        
+        if status and status.state == 'REJECTED':
+            status.state = 'PENDING'
+            status.feedback = ''  
+            db.session.add(status)
 
         db.session.commit()
 
@@ -1214,8 +1219,8 @@ def update_submission(submission_id):
                 "response_url": submission.response_url,
                 "todo_id": submission.todo_id,
                 "student_id": submission.student_id
-
-            }
+            },
+            "status_reset": bool(status and status.state == 'PENDING')  
         }), 200
 
     except Exception as e:
