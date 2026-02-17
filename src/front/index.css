@@ -816,6 +816,8 @@ img {
   .w-sm-auto {
     width: 100% !important;
   }
+}
+
 .buttonSalir {
   all: unset;
   cursor: pointer;
@@ -856,7 +858,4 @@ img {
 
 .navbaritems:active{
   transform: translateY(2px); 
-  
-  
-
 }
