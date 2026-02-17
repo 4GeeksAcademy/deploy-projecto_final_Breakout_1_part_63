@@ -235,7 +235,7 @@ export const TeacherSubmissionReview = () => {
   if (!todo) return <div className="container mt-5">No se encontró la tarea.</div>;
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4 tsr-page">
       <h2 className="mb-3">Revisión de entrega</h2>
 
       <div className="card mb-3">
@@ -275,10 +275,10 @@ export const TeacherSubmissionReview = () => {
             <b>Link:</b>{" "}
             {submission?.response_url ? (
               <a
+  className="tsr-link"
   href={submission.response_url}
   target="_blank"
   rel="noreferrer"
-  style={{  color: "#49BBBD", border: "none" }}
 >
   <span> Ver archivo </span>
 </a>
@@ -321,7 +321,7 @@ export const TeacherSubmissionReview = () => {
             </div>
           </div>
 
-          <div className="d-flex gap-2 mt-3">
+          <div className="tsr-actions mt-3">
             <button
   className="btn"
   style={{ backgroundColor: "#5B72EE", color: "#fff", border: "none" }}

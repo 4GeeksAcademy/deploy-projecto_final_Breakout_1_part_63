@@ -674,3 +674,146 @@
   transform: scale(0.8) rotate(15deg);
   opacity: 0.6;
 }
+
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.navbar .container {
+  gap: 12px;
+}
+
+@media (max-width: 991.98px) {
+  .navbar .container {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  .navbar .container > div:first-child {
+    justify-content: center;
+  }
+
+  .navbar .container > div:last-child {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .navbar .container > div:last-child .btn {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .navbar .container > div:last-child {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .navbar .container > div:last-child .btn {
+    width: 100%;
+  }
+
+  .navbar-brand {
+    font-size: 1.05rem !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .display-5 {
+    font-size: 1.9rem;
+  }
+  .display-3 {
+    font-size: 2.4rem;
+  }
+  .fs-5 {
+    font-size: 1rem !important;
+  }
+  .fs-3 {
+    font-size: 1.15rem !important;
+  }
+}
+
+.todo-img-wrapper {
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+.todo-img-wrapper img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.teacher-cover img {
+  max-height: 250px;
+  object-fit: cover;
+}
+
+.teacher-todos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.teacher-todo-card .card-img-top {
+  height: 180px;
+  object-fit: cover;
+}
+
+@media (max-width: 991.98px) {
+  .teacher-todos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 575.98px) {
+  .teacher-todos-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .list-group-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+
+  .list-group-item .btn {
+    width: 100%;
+  }
+
+  .list-group-item .badge {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .card .card-body .row.g-3 {
+    gap: 12px;
+  }
+
+  .card .card-body .d-flex.gap-2 {
+    flex-direction: column;
+  }
+
+  .card .card-body .d-flex.gap-2 .btn {
+    width: 100%;
+  }
+}
+
+.w-sm-auto {
+  width: auto;
+}
+@media (max-width: 575.98px) {
+  .w-sm-auto {
+    width: 100% !important;
+  }
+}
