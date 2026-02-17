@@ -159,7 +159,7 @@
   border: 0;
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-soft);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .soft-card .card-body {
@@ -171,6 +171,7 @@
   overflow: auto;
   border-radius: 12px;
   padding: 6px;
+  z-index: 1000; 
 }
 
 .dropdown-item.active-soft {
@@ -228,9 +229,6 @@
     padding: 14px;
   }
 
-  .soft-card .card-body {
-    padding: 16px;
-  }
 }
 .v-color {
   color: #00cbb8;
