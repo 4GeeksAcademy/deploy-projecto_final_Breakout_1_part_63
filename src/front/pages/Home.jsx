@@ -4,11 +4,11 @@ import diplomados from "../assets/img/diplomados.png";
 export const Home = () => {
 	return (
 		<div className="bg-light pb-5">
-			<div className="g-color-bg text-white">
+			<div className="g-color-bg text-white home-hero">
 				<div className="container">
 					<div className="row align-items-center">
 
-						<div className="col-sm-12 col-md-6 text-center text-md-start mb-5">
+						<div className="col-sm-12 col-md-6 text-center text-md-start mb-5 home-hero-text">
 							<h1 className="display-5 fw-bold mb-4">
 								<span className="text-warning">Entregar</span> tus tareas nunca fue tan fácil
 							</h1>
@@ -17,7 +17,7 @@ export const Home = () => {
 								Gestioná tareas, lecturas y calificaciones de forma simple y rápida en una sola plataforma.
 							</p>
 
-							<button className="btn btn-light btn-lg mt-3 fw-bold">
+							<button className="btn btn-light btn-lg mt-3 fw-bold home-cta">
 								Comenzar ahora
 							</button>
 						</div>
@@ -34,8 +34,10 @@ export const Home = () => {
 				</div>
 			</div>
 			<div className="bg-light py-5">
-				<div className="container text-center mb-5">
+				<div className="container">
+					<div className="text-center mb-5">
 					<h1 className="display-5 fw-bold mb-4">Los números que nos <span className="v-color">respaldan</span></h1>
+					</div>
 				</div>
 				<div className="row text-center g-4">
 
@@ -62,7 +64,7 @@ export const Home = () => {
 				</div>
 			</div>
 
-				<div className="container text-center bg-light mt-3">
+				<div className="container text-center bg-light mt-3 home-why">
 					<h1 className="fw-bold mb-4">¿Por qué elegir <span className="g-color">ACADEMICA</span>?</h1>
 					<p className="fs-4 mb-0">
 						Nuestra plataforma automatizada está diseñada para simplificar la gestión académica, mejorar la comunicación y optimizar el seguimiento del progreso de los estudiantes.
