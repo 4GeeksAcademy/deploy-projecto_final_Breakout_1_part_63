@@ -1,10 +1,14 @@
 import React, { useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { StaffCard } from "../components/StaffCard";
-import { GroupCard } from "../components/GroupCard";
+import { TodoCardHomeAdmin} from "../components/TodoCardHomeAdmin.jsx";
+
 
 export const HomeAdmin = () => {
     const { store, dispatch } = useGlobalReducer();
+
+    const currentGroups = [...store.groups]
+  .sort((a, b) => b.id - a.id) // más reciente primero
+  
 
  
     useEffect(() => {
@@ -59,32 +63,7 @@ export const HomeAdmin = () => {
         fetchGroups();
     }, [dispatch]);
 
-    useEffect(() => {
-        const fetchStaff = async () => {
-            try {
-                const backend = import.meta.env.VITE_BACKEND_URL;
-                const resp = await fetch(`${backend}/staff`, {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                });
 
-                if (!resp.ok) throw new Error("Error obteniendo staff");
-
-                const data = await resp.json();
-
-                dispatch({
-                    type: "GET_STAFF_SUCCESS",
-                    payload: filteredUsers,
-                });
-            } catch (error) {
-                console.error("Error fetching staff:", error);
-            }
-        };
-
-        fetchStaff();
-    }, [dispatch]);
 
     return (
         <div className="bg-light pb-5">
@@ -115,33 +94,29 @@ export const HomeAdmin = () => {
 
 
             <div className="container mt-5">
-                <h2 className="fw-bold mb-4">Grupos creados</h2>
+                    <div className="row">
+                      <div className="col-6">
+                    
+                    <h2 className="fw-bold mb-4">Grupos Creados </h2> 
+                    </div>
+                  
+                  </div>
+                 
+                    {currentGroups.length === 0 && (
+                      <p>No hay grupos creados s</p>
+                    )}
+                  
+                    <div className="row g-4">
+                      {currentGroups.map(group => (
+                        <div key={group.id} className="col-md-6 col-lg-3">
+                          <TodoCardHomeAdmin group={group} />
+                        </div>
+                      ))}
+                    </div>
+                   
+                  </div> 
 
-                {store.groups?.length === 0 && (
-                    <p>No hay grupos creados</p>
-                )}
-
-                <div className="d-flex gap-3 overflow-auto px-3 pb-3">
-                    {store.groups?.map(group => (
-                        <GroupCard key={group.id} group={group} />
-                    ))}
-                </div>
-            </div>
-
-            {/* STAFF */}
-            <div className="container mt-5">
-                <h2 className="fw-bold mb-4">Funcionarios de la Institución</h2>
-
-                {store.staff?.length === 0 && (
-                    <p>No hay funcionarios registrados</p>
-                )}
-
-                <div className="d-flex gap-3 overflow-auto px-3 pb-3">
-                    {store.staff?.map(staff => (
-                        <StaffCard key={staff.id} staff={staff} />
-                    ))}
-                </div>
-            </div>
+          
         </div>
     );
 };

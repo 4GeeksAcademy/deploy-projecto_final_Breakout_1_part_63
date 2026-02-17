@@ -19,7 +19,7 @@ export const EditReadingTeacher = () => {
     const [okMsg, setOkMsg] = useState(null);
     const [uploading, setUploading] = useState(false);
 
-    // 🔥 Modal states
+    //  Modal states
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
