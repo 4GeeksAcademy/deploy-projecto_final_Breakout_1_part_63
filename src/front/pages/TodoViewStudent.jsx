@@ -9,25 +9,50 @@ export const TodoViewStudent = () => {
   const [err, setErr] = useState(null);
   const [statusMap, setStatusMap] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
+   const [todos, setTodos] = useState([]);
   
 
   const todosPerPage = 6;
 
+  // useEffect(() => {
+  //   getTodos();
+  // }, []);
+
+  // const getTodos = async () => {
+  //   setErr(null);
+  //   try {
+  //     const backend = import.meta.env.VITE_BACKEND_URL;
+
+  //     const resp = await fetch(`${backend}/student/todos/home`);
+
+  //     const data = await resp.json().catch(() => ([]));
+  //     if (!resp.ok) throw new Error("Error al cargar tareas");
+
+  //     dispatch({ type: "GET_TODOS_SUCCESS", payload: data });
+  //   } catch (error) {
+  //     setErr(error.message);
+  //   }
+  // };
+
   useEffect(() => {
-    getTodos();
+    getStudentTodos();
   }, []);
 
-  const getTodos = async () => {
+  const getStudentTodos = async () => {
     setErr(null);
     try {
       const backend = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Usuario no autenticado");
 
-      const resp = await fetch(`${backend}/todos`);
+      const resp = await fetch(`${backend}/student/todos/home`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       const data = await resp.json().catch(() => ([]));
-      if (!resp.ok) throw new Error("Error al cargar tareas");
+      if (!resp.ok) throw new Error("Aún no tienes tareas asignadas");
 
-      dispatch({ type: "GET_TODOS_SUCCESS", payload: data });
+      setTodos(Array.isArray(data) ? data : []);
     } catch (error) {
       setErr(error.message);
     }
@@ -78,7 +103,7 @@ export const TodoViewStudent = () => {
       {err && <div className="alert alert-danger">{err}</div>}
 
       <div className="row g-4">
-        {currentTodos?.map((todo) => (
+        {todos.map((todo) => (
           <div className="col-12 col-sm-6 col-lg-4" key={todo.id}>
             <div className="card h-100 shadow-sm">
               <div className="todo-img-wrapper">

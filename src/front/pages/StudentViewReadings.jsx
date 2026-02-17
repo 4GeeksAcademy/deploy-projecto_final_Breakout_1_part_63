@@ -41,7 +41,7 @@ export const StudentViewReadings = () => {
             const data = await resp.json().catch(() => ([]));
 
             if (!resp.ok) {
-                throw new Error("Error al cargar lecturas");
+                throw new Error("Aún no tienes lecturas asignadas");
             }
 
             setReadings(data);
