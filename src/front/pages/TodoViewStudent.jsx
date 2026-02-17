@@ -9,6 +9,7 @@ export const TodoViewStudent = () => {
   const [err, setErr] = useState(null);
   const [statusMap, setStatusMap] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
+  
 
   const todosPerPage = 6;
 
@@ -47,19 +48,32 @@ export const TodoViewStudent = () => {
     if (totalPages > 0 && currentPage > totalPages) setCurrentPage(totalPages);
   }, [totalPages, currentPage]);
 
+
+
   return (
-    <div className="container mt-4 mt-md-5">
+    <div className="container mb-2">
+
+      <div className="m-0 p-0">
+                            <img
+                                src= "https://res.cloudinary.com/dxvdismgz/raw/upload/v1771106272/Screenshot_2026-02-14_at_3.54.56_p.m._zxz1ju.png"
+                                className="img-fluid w-100 rounded p-0"
+                                alt="cover"
+                                style={{ maxHeight: "250px", objectFit: "cover" }}
+                            />
+                        </div>
       {/* Header responsive */}
-      <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-4">
-        <h1 className="m-0">
+      <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2 mb-2">
+        <h1 className="mt-2">
           Tus tareas,{" "}
           <span className="text-primary">{store.user?.name || "Estudiante"}</span>
         </h1>
 
-        <small className="text-muted">
-          Mostrando {currentTodos.length} de {sortedTodos.length}
-        </small>
-      </div>
+       </div>
+         <Link to="/homeStudent">
+								<button className="btn btn-outline-dark p-1 mb-3">
+									←   Volver a Página Principal
+								</button>
+							</Link>
 
       {err && <div className="alert alert-danger">{err}</div>}
 
@@ -71,22 +85,14 @@ export const TodoViewStudent = () => {
                 <RandomImgTarea seed={todo.id} className="card-img-top" alt="tarea" />
               </div>
 
-              <div className="card-body d-flex flex-column">
+              <div className="card-body d-flex flex-column text-center">
                 <h5 className="card-title">{todo.title}</h5>
 
-                <div className="mt-auto d-flex flex-column flex-sm-row gap-2">
-                  <Link to={`/todos/${todo.id}`} className="btn btn-primary w-100">
-                    Revisar tarea
+                <div className="mt-auto d-flex flex-column flex-sm-row gap-2 card-footer">
+                  <Link to={`/todos/${todo.id}`} className="btn btn-primary w-100 p-1">
+                    Ver tarea
                   </Link>
 
-                  <button
-                    className={`btn w-100 ${
-                      statusMap[todo.id] ? "btn-success" : "btn-outline-secondary"
-                    }`}
-                    onClick={() => toggleStatus(todo.id)}
-                  >
-                    {statusMap[todo.id] ? "Completada" : "Pendiente"}
-                  </button>
                 </div>
               </div>
             </div>
@@ -102,7 +108,7 @@ export const TodoViewStudent = () => {
         )}
       </div>
 
-      {totalPages > 1 && (
+      {/* {totalPages > 1 && (
         <div className="d-flex justify-content-center mt-4 mb-3">
           <div className="d-flex flex-wrap gap-2 justify-content-center">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -116,7 +122,24 @@ export const TodoViewStudent = () => {
             ))}
           </div>
         </div>
-      )}
+      )} */}
+ {/* paginación  */}
+            <div className="d-flex justify-content-center mt-5">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <button
+                        key={page}
+                        className={`btn me-2 ${
+                            page === currentPage
+                                ? "btn-dark"
+                                : "btn-outline-dark"
+                        }`}
+                        onClick={() => setCurrentPage(page)}
+                    >
+                        {page}
+                    </button>
+                ))}
+            </div>
+
     </div>
   );
 };

@@ -201,24 +201,25 @@ export const TeacherSubmissionsList = () => {
           const isPending = String(r.state).toUpperCase() === "PENDIENTE";
 
           return (
+             <div className="row">
             <div
               key={String(r.student_group_id ?? r.user_id)}
               className="list-group-item tsl-item"
             >
-              <div className="tsl-left">
+              <div className="tsl-left ">
                 <div className="fw-semibold">{r.name}</div>
                 <div className="text-muted small">{r.email}</div>
               </div>
 
-              <div className="tsl-right">
-                <span className="badge tsl-badge" style={{ backgroundColor: isPending ? "#6c757d" : "#5B72EE", color: "#fff" }}>
+              <div className="tsl-right text-end ">
+                <span className="badge tsl-badge me-2" style={{ backgroundColor: isPending ? "#6c757d" : "#5B72EE", color: "#fff" }}>
                   {r.state}
                 </span>
 
                 {r.submission ? (
                   <Link
                     to={`/homeTeacher/todos/${todoId}/submissions/${r.submission.id}`}
-                    className="btn btn-sm btn-primary tsl-btn"
+                    className="btn btn-sm btn-primary tsl-btn "
                     style={{ backgroundColor: "#49BBBD", borderColor: "#49BBBD" }}
                   >
                     Corregir
@@ -230,6 +231,7 @@ export const TeacherSubmissionsList = () => {
                 )}
               </div>
             </div>
+             </div>
           );
         })}
       </div>

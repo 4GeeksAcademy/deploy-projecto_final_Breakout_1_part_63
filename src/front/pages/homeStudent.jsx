@@ -89,7 +89,7 @@ export const HomeStudent = () => {
           <div className="row align-items-center g-4">
             <div className="col-12 col-lg-6">
               <h1 className="fw-bold mb-3 g-color display-6 display-md-5">
-                Bienvenido{" "}
+                Bienvenido,{" "}
                 <span className="text-primary">
                   {store.user?.name || "Estudiante"}
                 </span>

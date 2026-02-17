@@ -197,7 +197,7 @@ export const CreateTodoForm = () => {
 
                 <div>
                   <div className="sidebar-title">
-                    Bienvenido, <strong>{teacherName}</strong>
+                    Bienvenido, <strong className="text-primary">{teacherName}</strong>
                   </div>
                 </div>
               </div>

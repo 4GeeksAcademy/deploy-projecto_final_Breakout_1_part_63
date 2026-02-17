@@ -3,8 +3,9 @@ import { useNavigate, Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const CreateGroupsAdmin = () => {
+
   const navigate = useNavigate();
-  const { store } = useGlobalReducer();
+  const { store, dispatch} = useGlobalReducer();
 
   const backend = import.meta.env.VITE_BACKEND_URL;
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -201,16 +202,43 @@ setCreating(true);
     return "tile tile-pink";
   };
 
+  useEffect(() => {
+          const fetchMe = async () => {
+              try {
+                  const backend = import.meta.env.VITE_BACKEND_URL;
+                  const resp = await fetch(`${backend}/me`, {
+                      headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${localStorage.getItem("token")}`,
+                      },
+                  });
+  
+                  if (!resp.ok) throw new Error("Error obteniendo usuario");
+  
+                  const data = await resp.json();
+  
+                  dispatch({
+                      type: "SET_CURRENT_USER",
+                      payload: data,
+                  });
+              } catch (error) {
+                  console.error("Error fetching current user:", error);
+              }
+          };
+  
+          fetchMe();
+      }, [dispatch]);
+
   return (
     <div className="container-fluid page-admin-groups">
       <div className="row g-0">
         <aside className="col-12 col-lg-3 sidebar-left">
           <div className="sidebar-inner">
             <div className="sidebar-header">
-              <Link to="/homeAdmin" className="btn btn-warning p-0">
+              <Link to="/homeAdmin" className="btn p-1 volverGroups">
                                  ← Volver 
                               </Link>
-              <h5 className="mb-0 sidebar-title">Bienvenido, Administrador</h5>
+              <h5 className="mb-0 sidebar-title">Bienvenido, <span className="text-primary">{store.user?.name || "Administrador"}</span></h5>
             </div>
 
             <div className="sidebar-section">

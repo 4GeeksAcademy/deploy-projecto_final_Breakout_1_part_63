@@ -73,7 +73,7 @@ export const HomeAdmin = () => {
                     <div className="row align-items-center">
                         <div className="col-md-6">
                             <h1 className="display-5 fw-bold mb-4 g-color">
-                                Bienvenido  <span className="text-primary">{store.user?.name || "Administrador"}</span>
+                                Bienvenido,  <span className="text-primary">{store.user?.name || "Administrador"}</span>
                             </h1>
                             <p className="fs-5">
                                 Aquí podrás gestionar los grupos de tu institución
