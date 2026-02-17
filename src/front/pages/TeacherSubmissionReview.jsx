@@ -268,24 +268,6 @@ export const TeacherSubmissionReview = () => {
           ← Volver
         </button>
       </div>
-
-       {/* {showDeleteModal && (
-                <>
-                    <div className="modal fade show d-block" tabIndex="-1">
-                        <div className="modal-dialog modal-dialog-centered">
-                            <div className="modal-content border-0 shadow-lg rounded-4">
-
-                                <div className="modal-header border-0 justify-content-center">
-                                    <h5 className="modal-title text-success text-center fw-bold">
-                                         Tarea calificada ✅
-                                    </h5>
-                                    </div> 
-                                    </div> 
-                                    </div> 
-                                    </div> 
-                                  
-                                    </> )} */}
-
     </div>
 
    
